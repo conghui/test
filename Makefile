@@ -32,6 +32,8 @@ endif
 
 all: doc thesis shuji
 
+pdf: thesis
+
 cls: $(CLSFILES)
 
 $(CLSFILES): $(SOURCES)
