@@ -45,6 +45,7 @@
 \label{chap:earthquake}
 
 \section{背景知识和算法概述}
+\label{sec:earth_algorithm}
 
 在中国传统文化中，对学者的最高评价是“上知天文，下知地理”。自然科学与技术在上世纪取得了长足的进步，然而，地球内部的构造、运动模式、可预测性等问题对于科学家来说仍旧充满未知与神秘。因此，地震等对人类社会生命财产安全造成巨大损失的重大灾害则成为了等待着科学家破译的最终科学挑战之一\citep{anderson1989theory}。
 
@@ -176,6 +177,27 @@ pressure），$\sigma_{m}$为平均压力（mean stress）。产量函数也用�
 \subsection{体系结构}
 神威太湖之光的计算能力是由我国自主研发的多核申威26010（SW26010）CPU提供，其中包括4个核组（Core Group，CG）\citep {fu2016sunway}，每个核组包括一个主核（Management Processing Element，MPE），64个从核（Computing Processing Element，CPE）和一个内存控制器（Memory Controller, MC）。 一个申威26010处理器拥有260个处理单元，并且提供超过3 TFlops的峰值性能。 神威太湖之光系统共有40960个SW26010 CPU，提供125 Pflops的峰值性能，10644900个计算核心。 虽然太湖之光在计算部分具备优于其他系统的显着优势，但内存容量相对较小，每个节点只有32 GB的内存和136 GB/s的内存带宽。
 
+Table \ref{tb:system-comp}显示了神威太湖之光超算系统与世界上其他顶级超级计算机的比较。 虽然每个神威节点只包含一个处理器，但处理器本身采用了独特的片上异构设计。它包含了与传统CPU核心类似的MPE，用以处理计算、管理、通信和IO等任务。除此以外，他还包括与GPU类似的CPE计算核心。CPE只负责处理高密度的并行计算任务，不负责管理和通信等工作。在计算方面，神威太湖之光超算系统表现出了优于其他系统的显着优势（比如用于Top500排名的Linpack应用，神威超算系统排名第一），但是在内存容量和内存带宽方面却比较普通（byte-to-float比例只有美国泰坦超算的1/5，且在HPCG标准测试中仅排名第三）。
+
+\begin{table*}[h]
+\footnotesize
+\caption{神威太湖之光超算系统与其他超算系统的比较。}
+\label{tb:system-comp}
+\begin{tabular*}{\textwidth}{ccccccccccc}
+\hline\hline
+  system & $R_{peak}$ & $R_{max}$ & \# nodes & \# cores & processor & memory & power\\
+  & (Pflops) & (Pflops) &&& architecture & size (TB) & (kW)\\\hline
+  TaihuLight & 125  & 93 & 40,960 & 10,649,600 & 4 MPEs & 1,310 & 15,371 \\
+  & & & & & and 256 CPEs \\\hline
+  Tianhe-2 & 55 & 34 & 16,000 & 3,120,000 & two 12-core CPUs & 1,375 & 17,808\\
+  & & & & &and three 57-core Intel MICs \\\hline
+  Titan & 27 & 18 & 18,688 & 560,640 & one 16-core CPU & 710 & 8,209 \\
+  & & & & &and one K20x GPU \\\hline
+  Sequoia & 20 & 17 & 98,304 & 1,572,864 & 16-core CPU & 1,572 & 7,890 \\\hline
+  Cori & 28 & 14 & 9,152 & 622,336 & 68-core CPU & 878 & 3,939\\\hline
+\hline
+\end{tabular*}
+\end{table*}
 
 \subsection{主要设计挑战}
 \label{sec:sunway-challenge}
@@ -184,7 +206,35 @@ pressure），$\sigma_{m}$为平均压力（mean stress）。产量函数也用�
 
 第二个挑战是要打破这个超算系统的内存墙，特别是对于这种基于有限差分运算的地震模拟的内存限制问题，正如表 \ref {tb:supercomputer-comp}中所强调的那样，神威超算系统的byte-to-float比例比其他领先超算系统低5-10倍，在这种情况下，我们需要非同寻常的与内存相关的创新来充分发挥神威超算峰值性能为125 Pflops的仿真计算能力。
 
-图~\ref {fig:sunway_mem}显示了CPE的内存层次结构。内存层次结构的顶层是每个CPE的32个浮点寄存器。本地寄存器只需要一个周期（cycle）来访问。使用CPE群集中的行和列通信总线，寄存器通信功能花费大约11个周期从同一行或列中的其他CPE的远程寄存器获取数据。第二个层次是64KB LDM，需要由程序员以精细的方式手动管理。第三个级别是每个CG带宽为34 GB/s的8 GB主内存，聚合到每个处理器的总共32 GB内存和136 GB/s带宽。
+
+
+
+
+申威处理器独特的内存层次结构以及每个层次中不同的特性也给程序设计带来非常严峻的挑战。图~\ref {fig:sunway_mem}描述了CPE的内存层次结构。虽然每个CG中的MPE采用与L1指令和数据高速缓存相似的存储器层次结构设计，但64个从核中的每一个从核都使用64 KB本地数据存储器（LDM）作为scratch-pad缓存而不是硬件上的高速数据缓存。
+
+
+如图~\ref {fig:sunway_mem}所示，内存层次结构的顶层是每个CPE的32个浮点寄存器。其中本地的寄存器只需要一个周期来访问。申威处理器中的64个从核按照8乘8的网格进行排列。其中每一行、每一列都有通信总线。总线为神威处理器的寄存器提供了寄存器通信的功能，寄存器通信的延迟为11个周期。后续的章节将进一步讨论关于如何利用此功能来改进数据重用，减少Halo读写以及进一步提高性能。
+
+第二个级别是每个CPE的64 KB LDM，需要由程序员以细粒度的方式手动管理。LDM内存的大小约束和读写调度都给类stencil操作带来了严峻的挑战。
+
+第三层则是每个核组只有8GB的主存，每个处理器有32 GB内存空间。 在目前这一代申威处理器中，每个核组连接到一个带宽为34 GB/s的DDR3接口。 因此，每个申威处理器在提供3 Tflops峰值性能的同时，同时提供了仅为136 GB/s的内存带宽。这大约是Intel最新多核芯片内存带宽的1/3或者是NVIDIA GPU内存带宽的1/5（如表\ref {tb:proc-comp}所示）。因此，我们的许多努力都集中在了如何通过精心设计算法来充分利用神威超算的的内存系统，该方案利用了DDR3，LDM和寄存器的所有可用功能和特性。
+
+\begin{table}[h]
+%\footnotesize
+\caption{申威26010芯片与其他多核芯片的简要对比。}
+\label{tb:proc-comp}
+\centering
+\begin{tabular*}{0.8\columnwidth}{cccc}
+\hline\hline
+  Chip & SW26010 & Intel KNL 7250 & NVIDIA P100 \\\hline
+    $R_{peak} (Tflops)$ & 3.06 & 3 & 5.3 \\\hline
+    memory   & DDR3 & DDR4 + MCDRAM & HBM2 \\
+    technology \\\hline
+    $size_{mem}$ (GB) & 32 & 96 + 16 & 16 \\\hline
+    $BW_{mem}$ (GB/s)  & 136 & 102 + 460 & 732 \\\hline
+\hline
+\end{tabular*}
+\end{table}
 
 由于与Sunway处理器的3 Tflops计算性能相比，第三级的内存大小和带宽都相对较小，因此我们在这方面的很多努力都集中在最大程度地利用64 KB LDM、寄存器、以及第二级和顶层的寄存器通讯功能。即使在我们设计并行化方案时，我们也仔细地将计算部分与我们在不同级别上可以承受的内存占用情况进行映射。更多细节在Section \ref{sec:contribution}中给出。
 
@@ -237,6 +287,35 @@ pressure），$\sigma_{m}$为平均压力（mean stress）。产量函数也用�
 
 I/O部分是大规模地震模拟的另一个重要因素。最棘手的挑战来自重启的检查点（checkpoint）。在我们的研究中发现，在16米分辨率的情况下，检查点所需的所有波场总计为108 TB，这显然超出了该系统所能提供的I/O带宽和容量。因此，我们整合了LZ4压缩以减小存储开销，以实现更平滑的运行，并采用诸如“组I/O”和“平衡I/O转发”等技术，实现了120GB/s的峰值I/O带宽，达到了该文件系统峰值带宽的92.3％。
 
+\subsection{地震模拟的核心计算流程}
+
+地震波传播中的速度、应力张量的求解是一个复杂的过程。它涉及三个速度分量和六个应力分量的标量值方程。 为了实现非线性的模拟引入了塑性特征，这使得整个系统变得更加复杂。
+
+图~\ref{fig:awp-workflow}描述了地震模拟的核心计算流程。每一个计算核心（kernels）都几乎涵盖了20-40个三维网格，其中大部分网格的大小相同。为了支持这样复杂的工作流程，特别是为了促进未来可能的算法调整，在我们的重新设计和移植过程中，我们将每个内核封装为一个标准模块，可以轻松地与其他模块通过接口进行衔接。
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\columnwidth]{awp_chart.jpg}
+\caption{地震模拟的核心计算流程，其中变量以数组表示，计算以kernel表示。}
+\label{fig:awp-workflow}
+\end{figure}
+
+在一次典型的地震模拟中，每一个迭代步的工作流程由以下五个主要步骤组成：
+
+\begin{itemize}
+\item {\bf velocity update}：基于上一个时间步的速度和应力数组，完成速度的更新，包括Halo区域 （由kernel $dvelcy$完成）和中心区域（由kernel $dvelcx$ 完成）。
+
+\item {\bf stress update}：使用速度，应力阵列，Lam系数和频率相关的地震波震级衰减参数Q等等数组来计算Halo区域和中心的应力更新（kernel $dstrqc$）;
+
+\item {\bf stress adjustment for the fault}：检查屈服应力是否越界（kernel $drprecprc\_calc$），并对断层区域进行相应的调整（kernel $drprecprc\_app$）;
+
+\item {\bf injection of source}：注入震源（kernel $addsrc$）来更新当前时间步的波场。
+
+\item {\bf stress adjustment for the free surface}：对自由边界进行应力调整（kernel $fstr$）。
+\end{itemize}
+
+以上描述的每一个步骤都涉及到了大量的大型三维数组读写。尽管每个内核都涉及高密度的算术运算，在神威太湖之光超算上性能的主要限制条件却来自于内存带宽的瓶颈。
+
 \subsection{定制的并行化设计}
 \label{sec:parallel}
 
@@ -261,6 +340,33 @@ I/O部分是大规模地震模拟的另一个重要因素。最棘手的挑战�
 
 \subsection{平衡与优化的内存设计方案}
 \label{sec:mem-redesign}
+
+申威26010的每个CG连接到带宽为34 GB/s的DDR3接口。 但是，我们使用DMA操作读取或写入的数据块的块大小（block size）很大程度上决定了可以有效利用的带宽部分。
+
+如表 \ref{tb:sw-bw}显示了我们根据不同连续读写的字节数测量出来的DMA内存带宽。对于128字节以下的块大小，神威26010的存储器访问的带宽不足理论带宽的一半。只有当每次读写的连续字节数超过512时，我们开始看到合理的内存带宽利用率。
+
+\begin{table}[!t]
+\small
+\caption{根据不同连续读写的字节数测量出来的DMA内存带宽。}
+\label{tb:sw-bw}
+\centering
+\begin{tabular}{ccccc}
+\hline\hline
+  block & \multicolumn{2}{c}{DMA Get (DDR3 to LDM)} & \multicolumn{2}{c}{DMA Put (LDM to DDR3)} \\
+  size (BYTEs) & 1 CG & 4 CGs & 1 CG & 4 CGs \\\hline
+  32 & 3.28 & 13.21 & 2.58 & 8.07 \\
+  64 & 8.71 & 34.13 & 9.42 & 39.01 \\
+  128 & 17.81 & 72.02 & 19.05 & 77.10 \\
+  256 & 21.42 & 89.16 & 25.80 & 104.86 \\
+  512 & 27.8 & 104.86 & 30.48 & 107.88 \\
+  1024 & 29.8 & 115 & 33.4 & 126.6 \\
+  2048 & 31.3 & 119.2 & 34.2 & 133 \\
+  4096 & 32.1 & 118 & 34.01 & 134 \\
+  \hline
+\end{tabular}
+\end{table}
+
+因此，在我们开始采用各种与内存相关的优化策略来提高数据重用率之前，面对memory-bound的问题，我们的首要优化任务是保证DMA访问时能够进行大块的内存访问，以便高效利用申威26010的内存带宽。
 
 为了突破内存限制，解决方案的关键则是高效利用SW26010处理器的内存层次结构。
 
@@ -295,29 +401,13 @@ N_{redundant\_DMA\_load} = 2 \times H \cdot N_y \cdot (\frac{N_z}{C_z\cdot W_z}-
 
 结合等式\ref{eq:czy}、\ref{eq:wzy}和\ref{eq:load}，我们可以很容易推导出，为了实现光晕的最小冗余DMA负载，我们需要确保$C_y\cdot W_y = C_z\cdot W_z $。
 
-对于内存带宽部分，SW26010的每个CG连接到带宽为34 GB/s的DDR3接口。 但是，我们使用DMA操作读取或写入的数据块的块大小（block size）很大程度上决定了可以有效利用的带宽部分，如表 \ref{tb:sw-bw}所示。 只有当每次读写的连续字节数超过512时，我们开始看到合理的内存带宽利用率。
 
-\begin{table}[!t]
-\small
-\caption{根据不同连续读写的字节数测量出来的DMA内存带宽。}
-\label{tb:sw-bw}
-\centering
-\begin{tabular}{ccccc}
-\hline\hline
-  Block & \multicolumn{2}{c}{DMA Get (GB/s)} & \multicolumn{2}{c}{DMA Put (GB/s)} \\
-  Size (BYTEs) & 1 CG & 4 CGs & 1 CG & 4 CGs \\\hline
-  32 & 3.28 & 13.21 & 2.58 & 8.07 \\
-  128 & 17.81 & 72.02 & 19.05 & 77.10 \\
-  512 & 27.8 & 104.86 & 30.48 & 107.88 \\
-  2048 & 31.3 & 119.2 & 34.2 & 133 \\
-  \hline
-\end{tabular}
-\end{table}
 
 在我们的模型中，连续DMA传输的块大小由$ W_z $确定，它表示沿着最快轴的尺寸大小。因此，我们需要保持$ W_z $轴尽可能大。结合我们模型的第一个和第二个目标，我们可以推导出一个较小的值$ C_z $是相对较优的，可以实现有效的内存访问行为。
 
 因此，在大多数情况下，我们推导出$ C_z = 1 $和$ C_y = 64 $是CG中最合适的配置。 64个CPE线程中的每一个线程将初始化DMA加载操作，以便于之后获取对应的立方区域（$W_z \cdot W_y \cdot W_x$)）和用于stencil计算的$ yz $平面。
 
+\subsection{共位数组融合}
 即使在采用上述的最佳并行化方案之后，在大多数情况下，由于我们需要访问大量的数组，在只有64KB的LDM中，能够分配给每个数组的缓存是极其有限的。对于每一个三维数组，只有做一个维度（快轴）的数据在内存中是连续的，按照第\ref{sec:parallel}节描述的并行划分方案，我们能够连续读取的块很小，使得DMA读取的效率很低。
 
 例如，对于$ dvelcx $（速度更新）的内核，我们需要读取10个不同的数组（$ u $，$ v $，$ w $，$ xx $，$ yy $，$ zz $，$ xy $，$ xz $，$ yz $，$ d $，它们是不同方向上的速度和应力变量）。根据等式\ref {eq:wzy}，为了计算这个内核中空间四阶stencil，我们需要在LDM中加载至少5个slice，所以$ W_x $的最小值是5。对于参数$ W_y $，因为$（W_y-2H）$是加载到LDM中的有效区域，所以我们需要将$ W_y $设置为至少9（对于$ H = 2 $），以保持halo成本处于合理的水平。
@@ -328,10 +418,23 @@ W_z \cdot 9 \cdot 5 \cdot 10 \cdot 4 < 64 \times 1024\\
 \label{eq:wzy1}
 \end{equation}
 其中我们得到$ W_z $的最大值为32。在这种情况下，DMA块的大小为128字节，导致内存带宽利用率低，仅为峰值带宽的50％。
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\columnwidth]{awp_before.png}
+\caption{共位数组融合之前，函数$dvelcx$和$dstrqc$的内存访问模式。}
+\label{fig:array-fusion-before}
+\end{figure}
 
-为了解决上述问题，我们分析了所有不同的相关内核（kernel），并确定了一组展示大多数内核常见行为的共位数组（co-located array）。 在$ dvelcx $和其他类似内核的例子中，我们确定了数组（$ u $，$ v $，$ w $，$ xx $，$ yy $，$ zz $，$ xy $，$ xz $和 $ yz $）是在不同内核之间展示相同内存访问模式的共位数组。 因此，我们制定策略将$ u $，$ v $和$ w $融合成一个包含三个元素的向量数组，并将$ xx $，$ yy $，$ zz $，$ xy $，$ xz $和$ yz $转换为一个包含六个元素的向量数组。
+为了解决上述问题，一个直观的想法则是减少数组的数量。数组数量的减少能够使得每个数组可使用的LDM空间增大。在我们分析了所有不同的相关内核（kernel），并确定了一组展示大多数内核常见行为的共位数组（co-located array）。 在$ dvelcx $和其他类似内核的例子中，我们确定了数组（$ u $，$ v $，$ w $，$ xx $，$ yy $，$ zz $，$ xy $，$ xz $和 $ yz $）是在不同内核之间展示相同内存访问模式的共位数组。 因此，我们制定策略将$ u $，$ v $和$ w $融合成一个包含三个元素的向量数组，并将$ xx $，$ yy $，$ zz $，$ xy $，$ xz $和$ yz $转换为一个包含六个元素的向量数组。共位数组融合的过程如图\ref{fig:array-fusion-before}和图\ref{fig:array-fusion-after}所示。
 
-从等式\ref{eq:wzy}中融合数组后，只有3个单独的数组可以读取，我们得到：
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\columnwidth]{awp_after.png}
+\caption{共位数组融合之后，函数$dvelcx$和$dstrqc$的内存访问模式。}
+\label{fig:array-fusion-after}
+\end{figure}
+
+在完成了数组融合之后，从等式\ref{eq:wzy}中可以看到，只有3个单独的数组可以读取，我们得到：
 
 \begin{equation}
 W_z \cdot 9 \cdot 5 \cdot 3 \cdot 4 < 64 \times 1024\\
@@ -339,7 +442,44 @@ W_z \cdot 9 \cdot 5 \cdot 3 \cdot 4 < 64 \times 1024\\
 \end{equation}
 它给出的最大$ W_z $值约为108。在这种情况下，DMA块的大小为432字节，将内存带宽利用率提高到80％左右。 在$ dstrqc $内核的极端情况下，数组融合技术可以将DMA块的大小从84字节增加到512字节，从而将有效内存带宽从50.47 GB/s提高到104.82 GB/s。
 
-在将上述所有技术（基于寄存器通信的Halo交换，由分析模型推导的最优blocking配置以及数组融合）相结合之后，我们推出了一种均衡的多层级内存使用方案，可以有效利用SW26010的存储器层次结构。
+\subsection{寄存器通信}
+
+申威26010处理器与其他主流处理器相比，最与众不同的一个功能是每个核组中的64个CPE中的寄存器通信机制。由64个CPE组成的计算核心网格中，我们有8个列通信总线和8个行通信总线，这些总线成为了CPE之间进行快速寄存器通信的通道，为不同的CPE提供了重要的数据共享能力。
+
+寄存器级通信是通过\emph{行、列通信总线}的一对\emph{Put}和\emph{Get}API接口来实现的。发送方CPE使用\emph {Put}操作将256位寄存器数据发送到接收方CPE的\emph{传输缓冲区}，而接收方CPE使用\emph{Get}操作将256位数据从\emph{传输缓冲区}传输到本地通用寄存器中。
+
+这种寄存器通信功能为stencil计算中的数据重用提供了完美的解决方案。对于我们在第\ref{sec:parallel}节
+中描述的并行化方案中，我们需要使用DMA操作将中心数据和Halo区域的数据加载到LDM中。在寄存器通信功能的支持下，大多数CPE线程只需要加载中心区域，并通过寄存器通信操作从相邻线程获取Halo区域。如图~\ref{fig:64by1-reg}所示，只有第一个和最后一个CPE线程仍然需要初始化Halo一侧的DMA加载，其他Halo区域的DMA开销则被替换为更有效的寄存器通信方案。
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\columnwidth]{awp_using_register.png}
+\caption{同一核组内的64个CPE使用寄存器通信。}
+\label{fig:64by1-reg}
+\end{figure}
+
+使用寄存器通信方案的另一个好处是，当从寄存器中读取Halo区域时，LDM中用以存储Halo区域的空间变小。换句话说，在给定相同大小的LDM的情况下，我们可以支持更大的$ W_x $，$ W_y $和$ W_z $配置，这可以进一步提高内存带宽利用率。
+
+\subsection{从核ID重新映射}
+
+从核之前的寄存器通信也有局限。由于用于通信的总线只能连接同一行或者同一列的从核，只有在同一行或者同一列的CPE才能够进行寄存器通信。如果两个CPE分布在不同的行和不同的列中，则需要多个寄存器通信来实现数据交换。
+
+正如在第\ref{sec:parallel}节中介绍的，在大多数情况下，我们采用$ 64 \times1 $的CPE线程配置。在这样的配置中，需要交换数据的多数的CPE线程将不在同一行或列中。为了解决这个问题，并尽可能减少所需的寄存器通信操作次数，我们设计了一个特定的CPE ID重新映射方案。
+
+如图~\ref{fig:id-remapping}所示，对于奇数行，我们保持重映射的逻辑 CPE ID（括号内的ID）与原始硬件CPE ID相同（ID外部的ID括号）;对于偶数行，我们则保持重新映射的逻辑CPE ID与原始硬件CPE ID相反。
+
+通过这种从核重新映射方案，我们能够保证需要进行数据交换的相邻线程位于同一物理行或物理列中。以左侧Halo的数据交换为例，每个CPE线程需要发送相应的Halo数据到其下一个CPE线程。对于以蓝色标记的CPE线程，发送者和接收者总是在同一行中。对于标记为红色的CPE线程，发送者和接收者则总是在同一列中。
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\columnwidth]{awp_register_remap.png}
+\caption{
+从核ID重新映射方案。它确保所有相邻CPE线程间的数据交换操作。 括号外的ID是原始硬件从核ID，而括号内的ID是重新映射的逻辑从核ID。}
+\label{fig:id-remapping}
+\end{figure}
+
+在将上述所有技术相结合之后，我们推出了一种均衡的多层级内存使用方案，可以有效利用SW26010的存储器层次结构。
 
 \subsection{实时压缩解压缩}
 
@@ -434,6 +574,103 @@ $ gather\_VX $和$ unpack\_VX $），这消耗了总运行时间的1-2％。我�
 
 \section{基于神威太湖之光的神威大地震模拟}
 
+以前对剧烈地震的模拟通常局限于低频信息，因为高频模拟需要计算机提供巨大的内存和强大的计算能力。凭借神威太湖之光的强大计算能力，我们成功模拟了唐山大地震导致的地震波在华北地区的传播，地震波的最大频率为18 Hz。本次模拟的计算域是320公里乘以312公里（水平面）乘以40公里（深度）。本研究的地震模拟利用复杂几何断层引发的破裂动力源来推动地震波传播，估算唐山地震在华北地区的地震危险性分布。唐山断裂的几何构造以及构造应力场是通过观测和合理的推断推导出来的。在动态和地面运动模拟中，实现了垂直方向上分辨率为25公里，垂直方向上的分辨率为2公里的华北地区的三维速度模型。通常情况下，沉积结构被添加到强大的地面运动模拟中。这些复杂性的三位模型使我们对唐山地震的模拟接近现实。
+
+\subsection{动态破裂源}
+
+为了重现由唐山大地震造成的地震灾害，我们需要尽可能准确地描述地震环境和地震过程。地震发生后，唐山市南部出现了8至11公里的地表破裂带。这个破裂带由十多条东北方向的走滑右旋（right-lateral）、走滑左步（left-stepping）梯形断裂构成，总体走向为 N30$^\circ$E，水平方向上的位移为1.5至2.3米，垂直方向上的位移为0.2至0.7米。在地表破裂带的南部，垂直位移从西部上升到东部。在发现新的地表破裂带\citep {Qiu_discovery_2005}之后，更多的地质证据证明，1976年唐山地震的地表破裂带延伸至城市西南部超过47公里 \citep{guo_new_2011}，正如图\ref{fig:tangshan_geomap}a 所示。此外，深部地震反射剖面表明，唐山断裂系统极为复杂，可能深入到莫霍界面\citep{liu_seismogenic_2007}。
+
+根据之前对唐山地震的调查和观测，我们构建了唐山断裂的三维几何结构，如图\ref{fig:tangshan_geomap}b 所示。非平面断层分别沿着走向（strike）和倾向（dip）方向延伸约70公里和35公里。两个水平原理的压缩应力与图\ref{fig:tangshan_geomap}a 所示的方向一样用作动力学模拟中的驱动力。
+
+描述断层几何的复杂性需要强大的数值方法和计算能力才能实现不规则断层面上的动态条件。我们在神威太湖之光超级计算机上面进行了基于复杂几何断层的唐山大地震动力破裂模拟，这位后续的地震波传播模拟提供了震源。图 \ref{fig:tangshan_geomap}b 表示了T=10.5秒时唐山地震破裂的绝对滑动速率（absolute slip rate）快照。由于断层走向的曲率变动的原因，破裂断层的东北侧表现出更多的复杂性。这证实了动态破裂模拟过程中复杂三维断层几何的重要性。
+
+\begin{figure}[t]
+\begin{tabular}{cc}
+(a) & (b) \\
+    \includegraphics[width=0.5\columnwidth]{Tangshan_geomap.eps} &
+    \includegraphics[width=0.5\columnwidth]{Tangshan_Fault1.eps}
+\end{tabular}
+    \caption{
+（a）唐山地震模拟的强地面运动，模拟的区域为（320km×312km×40km）。 该地区的沉积深度以颜色表示; 显示了震中（红星），地震断层（红色曲线）和应力场（红色和蓝色矢量）。 （b）通过CG-FDM方法计算的动态源（T = 10.5秒时的断层的绝对滑移率）。}
+    \label{fig:tangshan_geomap}
+\end{figure}
+
+
+\subsection{强地面运动}
+
+为了能够完全重现唐山大地震震源附近较大区域的地震危险性分布，我们将动力破裂源作为地震波传播过程的输入，计算出较大区域的强地面运动。 我们模拟的区域是320公里乘以312公里乘40公里（约115.7$^\circ$E$\sim$119.7$^\circ$E, 38.0$^\circ$N$\sim$41.7$^\circ$N，如图\ref{fig:tangshan_region}所示），这个区域包括了唐山，北京，天津等主要城市。在本研究的地震模拟中，空间分辨率逐渐从500米增加到8米，最大频率从0.5 Hz增加到18 Hz。
+
+\begin{figure*}[h]
+    \centering
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includegraphics[height=2.5in]{GeoMapTangshan.pdf}
+        \caption{唐山地震模拟区域。}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includegraphics[height=2.5in]{fault.pdf}
+        \caption{唐山地震破裂带。}
+    \end{subfigure}
+    \caption{唐山地震模拟区域和地震破裂带。}
+    \label{fig:tangshan_region}
+\end{figure*}
+
+由于动态破裂、复杂的三维介质和地质结构，地震可能产生高频能量（高达至少10 Hz）。因此具有高效的高频分量的地震图是工程地震分析的重要数据，能够为建筑物的抗震设计提供了合适的标准。
+
+\begin{figure*}[h]
+    \includegraphics[width=1.0\columnwidth]{Snap_Vx_tangshan.pdf}\\
+    \caption{速度分量（东西方向）分别在（a）T = 10秒，（b）T = 20秒，（c）T = 30秒等不同时刻地震波传播的波场快照。}
+    \label{fig:strong_motion_2}
+\end{figure*}
+
+图\ref{fig:strong_motion_2}描述了在（a）T = 10秒，（b）T = 20秒，（c）T = 30秒等不同时刻地震波传播的波场快照。破裂从断层中心开始，向双向传播。 由于近地表的弯曲断层，北方波场显示出更复杂的模式，这表明了大地震模拟期间非平面断层几何的重要性。
+
+如图\ref{fig:strong_motion}a$\sim$b 所示，不同的空间分辨率模拟之间存在明显的差异，较低的空间分辨率（如200米）不足以很好地描述盆地结构（如图\ref{fig:tangshan_geomap}a 所示，其中最大沉积深度为800米）。
+
+
+因此，严格来说，使用较低的空间分辨率来计算尾波是不准确的。本研究的使用高分辨率进行模拟，可以看到沧州市主要地震能量在较高空间分辨率下模拟的尾波振动比较低（如图\ref{fig:strong_motion}b所示）。此外，由于唐山地震的震中位于沉积盆地，地震的主峰甚至无法准确计算出来（见图\ref{fig:strong_motion}a$\sim$b，宁河）。总而言之，空间分辨率的高低直接关系着复杂地震模拟的准确度，16米以上的高分辨率模拟是三维复杂结构的地震模拟的关键。
+
+我们还比较了地震波波场快照和震害图（hazard map)用以说明不同结果的细节。 图\ref{fig:strong_motion}c$\sim$d 描述了唐山地震发生60秒后地震波波场的快照。 虽然波场的主要行为是相似的，但我们在小尺度上看到明显的差异。 图\ref{fig:strong_motion}c$\sim$d右上角的放大图片说明了这次地震中的沉积物效应。我们可以看到，在空间低分辨率下沉积物效应不能很好地被描述出来。
+
+唐山地震的震害图（用地震烈度表示）可以通过计算水平方向上的地面峰值速度来获得。对此，我们比较了200米和16米分辨率下的震害图（如图\ref{fig:strong_motion}e$\sim$f 所示）。其中，红色（烈度为9$\sim$11）表示地震中最严重的破坏，这非常依赖破裂断层的位置。但由于沉积作用，高强度的破坏影响被重新分配了：位于唐山市的滦南县虽然不在地震断层的周围，也遭受了严重的破坏。对于不同的分辨率下地震模拟结果，震害图显示了高分辨率模拟（如图\ref{fig:strong_motion}f 所示）和低分辨率模拟（如图\ref{fig:strong_motion}e 所示）的巨大差异。例如，武清地区的烈度在左图中为6级（蓝色），右图为7级（绿色）。这再次证明了高分辨率模拟在实现准确地震危险图方面的重要性。
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=1.0\columnwidth]{CompareDifferentSpatialResolution.eps}\\
+  \caption{
+不同空间分辨率的地震模拟结果比较。左栏是空间分辨率为200m的地震模拟，右栏相应的16m分辨率。 （a $ \thicksim $ b）宁河县和沧州市速度（W-E分量）地震记录图; （c $ \thicksim $ d）地震发生后60秒处的速度场快照，右上角的缩放子图描述了具有沉积作用的区域的细节（虚线方框）; （e $ \thicksim $ f）地震震害分布图，由水平方向上的地面峰值速度来计算获得。}
+  \label{fig:strong_motion}
+\end{figure}
+
+
+\section{总结}
+
+我们在这里要强调的一个信息是，本研究设法将神威太湖之光超级计算机的各个方面的性能都发挥到了极限。 如Table \ref{tb:push-limit}所示，对于每一项指标，我们都几乎将其发挥到了极限，特别是对于内存系统。 因此，即便神威太湖之光超算系统的内存系统与美国的泰坦超算系统相比处于劣势（太湖之光的byte-to-float之比仅为美国泰坦超算的1/5，而每个计算密集的kernel需要30个3D数组），我们仍然能够在不使用压缩方案的情况下使用神威太湖之光的10,400,000个计算核心，实现了性能为15.2-Pflops非线性唐山大地震模拟，达到了全机峰值性能的12.2％。
+
+\begin{table}[!t]
+%\footnotesize
+\caption{
+神威太湖之光能够支持的最大地震模拟测试用例下的计算与内存性能（无压缩情况下）。此处描述的是每个核组的计算性能，内存大小和带宽；单个CPE从核的LDM大小。请注意，在每个核组的8 GB内存中，我们必须为整个机器的正常运行和MPI缓冲区预留2.5 GB的空间。}
+\label{tb:push-limit}
+\centering
+\begin{tabular}{cccc}
+\hline\hline
+  & Effectively used & Peak & \% \\
+
+  Computing Performance & 98.7 Gflops & 765 Gflops & 12.9\% \\
+  Memory Size & 5.2 GB & 5.5 GB & 94.5\% \\
+  Memory Bandwidth & 25 GB/s & 34 GB/s & 73.5\% \\
+  LDM Size & 60 KB & 64 KB & 93.8\% \\\hline
+\hline
+\end{tabular}
+\end{table}
+
+更令人兴奋的创新当然是实时压缩方案，它以可接受的准确度损失为代价，将我们的仿真性能和功能扩展到超出机器物理约束的范围。 通过利用10,485,760个CPE进行神威超算整机模拟，并且采用实时压缩策略，本研究的模拟规模相当于使用两台神威超算进行的模拟，这几乎是历史上最大规模的一次科学计算数值模拟。采用实时压缩方案，我们获得了两个好处，在物理内存限制的情况下能够进行更大规模的科学模拟，或者在相同的问题规模下，将地震模拟的性能进一步提升了24％。
+
+我们的压缩方案将我们的计算性能扩展到了18.9 Pflops（峰值的15％），并且使我们能够支持18 Hz、8米分辨率的地震模拟。这对于以前的技术水平来说是一个巨大的飞跃。 虽然目前的压缩方案主要是针对我们的特定应用和神威架构定制的，但我们相信这个想法有很大的潜力应用于其他应用和其他架构，特别是在内存带宽成为主要限制的时代。
+
 
 %\include{data/chap01}
 %\include{data/chap02}
@@ -465,14 +702,14 @@ $ gather\_VX $和$ unpack\_VX $），这消耗了总运行时间的1-2％。我�
 \include{data/ack}
 
 %% 附录
-\begin{appendix}
-\input{data/appendix01}
-\end{appendix}
+%\begin{appendix}
+%\input{data/appendix01}
+%\end{appendix}
 
 %% 个人简历
 \include{data/resume}
 
 %% 本科生进行格式审查是需要下面这个表格，答辩可能不需要。选择性留下。
 % 综合论文训练记录表
-\includepdf[pages=-]{scan-record.pdf}
+%\includepdf[pages=-]{scan-record.pdf}
 \end{document}
