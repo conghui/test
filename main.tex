@@ -219,7 +219,7 @@ Table \ref{tb:system-comp}显示了神威太湖之光超算系统与世界上其
 
 第三层则是每个核组只有8GB的主存，每个处理器有32 GB内存空间。 在目前这一代申威处理器中，每个核组连接到一个带宽为34 GB/s的DDR3接口。 因此，每个申威处理器在提供3 Tflops峰值性能的同时，同时提供了仅为136 GB/s的内存带宽。这大约是Intel最新多核芯片内存带宽的1/3或者是NVIDIA GPU内存带宽的1/5（如表\ref {tb:proc-comp}所示）。因此，我们的许多努力都集中在了如何通过精心设计算法来充分利用神威超算的的内存系统，该方案利用了DDR3，LDM和寄存器的所有可用功能和特性。
 
-\begin{table}[h]
+\begin{table}[ht]
 %\footnotesize
 \caption{申威26010芯片与其他多核芯片的简要对比。}
 \label{tb:proc-comp}
@@ -238,7 +238,7 @@ Table \ref{tb:system-comp}显示了神威太湖之光超算系统与世界上其
 
 由于与Sunway处理器的3 Tflops计算性能相比，第三级的内存大小和带宽都相对较小，因此我们在这方面的很多努力都集中在最大程度地利用64 KB LDM、寄存器、以及第二级和顶层的寄存器通讯功能。即使在我们设计并行化方案时，我们也仔细地将计算部分与我们在不同级别上可以承受的内存占用情况进行映射。更多细节在Section \ref{sec:contribution}中给出。
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=.9\columnwidth]{memory_hierarchy.pdf}
 \caption{CPE的内存层次结构。顶层是高效的寄存器，访问或通讯需要花费1或11个周期；中间是大小为64KB的LDM高速缓存，访问LDM需要4个周期；底层是所有从核共享的8GB主存，访问需要120+个周期，带宽为136GB/s。}
@@ -272,7 +272,7 @@ Table \ref{tb:system-comp}显示了神威太湖之光超算系统与世界上其
 
 大规模地震模拟的整个工作流程是一个极其复杂的过程，由不同的组成部分组成，包括从动态破裂源生成、数值计算网格的生成到最耗时的地震波传播部分。这些不同的组件给超级计算机的各个方面（计算、内存、通信、存储和I/O）都带来了巨大的挑战。为了解决这些挑战，我们构建了一个集成了不同功能的统一软件框架，如图\ref{fig:framework}所示。
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.9\columnwidth]{architecture.pdf}
 \caption{基于神威太湖之光的统一地震模拟软件框架。该框架由动态破裂震源生成器、数值计算网格的生成器、地震波传播模块以及其他辅助模块组成。}
@@ -293,7 +293,7 @@ I/O部分是大规模地震模拟的另一个重要因素。最棘手的挑战�
 
 图~\ref{fig:awp-workflow}描述了地震模拟的核心计算流程。每一个计算核心（kernels）都几乎涵盖了20-40个三维网格，其中大部分网格的大小相同。为了支持这样复杂的工作流程，特别是为了促进未来可能的算法调整，在我们的重新设计和移植过程中，我们将每个内核封装为一个标准模块，可以轻松地与其他模块通过接口进行衔接。
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.8\columnwidth]{awp_chart.jpg}
 \caption{地震模拟的核心计算流程，其中变量以数组表示，计算以kernel表示。}
@@ -331,7 +331,7 @@ I/O部分是大规模地震模拟的另一个重要因素。最棘手的挑战�
 
 （4）LDM缓存方案：对于每个CPE，我们使用DMA操作将合适大小的计算区域，包括中心部分和晕圈（halo）部分加载到LDM中，以便随后执行计算。 DMA操作被设计为异步的，以便与计算部分重叠。
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.9\columnwidth]{blocking.pdf}
 \caption{多层级区域分解方案：（1）MPI进程的二维分解； （2）每个核组内分解；（3）Athreads的二维分解；（4）LDM缓存方案。}
@@ -418,7 +418,7 @@ W_z \cdot 9 \cdot 5 \cdot 10 \cdot 4 < 64 \times 1024\\
 \label{eq:wzy1}
 \end{equation}
 其中我们得到$ W_z $的最大值为32。在这种情况下，DMA块的大小为128字节，导致内存带宽利用率低，仅为峰值带宽的50％。
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.7\columnwidth]{awp_before.png}
 \caption{共位数组融合之前，函数$dvelcx$和$dstrqc$的内存访问模式。}
@@ -427,7 +427,7 @@ W_z \cdot 9 \cdot 5 \cdot 10 \cdot 4 < 64 \times 1024\\
 
 为了解决上述问题，一个直观的想法则是减少数组的数量。数组数量的减少能够使得每个数组可使用的LDM空间增大。在我们分析了所有不同的相关内核（kernel），并确定了一组展示大多数内核常见行为的共位数组（co-located array）。 在$ dvelcx $和其他类似内核的例子中，我们确定了数组（$ u $，$ v $，$ w $，$ xx $，$ yy $，$ zz $，$ xy $，$ xz $和 $ yz $）是在不同内核之间展示相同内存访问模式的共位数组。 因此，我们制定策略将$ u $，$ v $和$ w $融合成一个包含三个元素的向量数组，并将$ xx $，$ yy $，$ zz $，$ xy $，$ xz $和$ yz $转换为一个包含六个元素的向量数组。共位数组融合的过程如图\ref{fig:array-fusion-before}和图\ref{fig:array-fusion-after}所示。
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.7\columnwidth]{awp_after.png}
 \caption{共位数组融合之后，函数$dvelcx$和$dstrqc$的内存访问模式。}
@@ -452,7 +452,7 @@ W_z \cdot 9 \cdot 5 \cdot 3 \cdot 4 < 64 \times 1024\\
 中描述的并行化方案中，我们需要使用DMA操作将中心数据和Halo区域的数据加载到LDM中。在寄存器通信功能的支持下，大多数CPE线程只需要加载中心区域，并通过寄存器通信操作从相邻线程获取Halo区域。如图~\ref{fig:64by1-reg}所示，只有第一个和最后一个CPE线程仍然需要初始化Halo一侧的DMA加载，其他Halo区域的DMA开销则被替换为更有效的寄存器通信方案。
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.7\columnwidth]{awp_using_register.png}
 \caption{同一核组内的64个CPE使用寄存器通信。}
@@ -471,7 +471,7 @@ W_z \cdot 9 \cdot 5 \cdot 3 \cdot 4 < 64 \times 1024\\
 
 通过这种从核重新映射方案，我们能够保证需要进行数据交换的相邻线程位于同一物理行或物理列中。以左侧Halo的数据交换为例，每个CPE线程需要发送相应的Halo数据到其下一个CPE线程。对于以蓝色标记的CPE线程，发送者和接收者总是在同一行中。对于标记为红色的CPE线程，发送者和接收者则总是在同一列中。
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.5\columnwidth]{awp_register_remap.png}
 \caption{
@@ -485,7 +485,7 @@ W_z \cdot 9 \cdot 5 \cdot 3 \cdot 4 < 64 \times 1024\\
 
 在充分发挥了神威太湖之光硬件的所有性能之后，我们的下一个创新就是即时压缩方案，它不仅使可用内存空间增加了一倍，而且在相同的物理内存带宽下也释放出更多的计算能力。
 
-\begin{figure*}[h]
+\begin{figure*}[ht]
 \centering
 
 \includegraphics[width=1.0\textwidth]{compression.pdf}
@@ -520,7 +520,7 @@ W_z \cdot 9 \cdot 5 \cdot 3 \cdot 4 < 64 \times 1024\\
 
 为了验证我们的压缩方案，我们在不同分辨率下对使用和不使用压缩方案产生的仿真结果进行了广泛比较。图\ref {fig:compress_valid}显示了宁河和沧州两个台站的压缩前后的地震图的对比。位于唐山地震断层附近的宁河县在地震期间承受了巨大的破坏，图中的蓝色实线是未压缩的结果，红色的虚线是压缩的结果。压缩结果和未压缩结果两者的尖锐起点彼此相似，而压缩结果的尾波由于压缩的准确性损失而不能完全匹配参考波形。尽管如此，压缩结果的大部分细节仍然​​保留得很好，这对于强大的地面运动模拟来说足够精确。此外，我们还比较了远离震中的沧州站。由于较长的时间传播和误差积累，压缩后的结果可以承受稍微更高的精度损失，但直到120秒仿真结束时，这些线路仍然可以很好地匹配。这些比较结果表明，虽然压缩在一定程度上引入了错误，但我们仍然可以使用这套实时压缩方案，不仅能够获得更好的性能，还能够模拟更大规模的地震波传播问题。
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.9\columnwidth]{CompareCompress.eps}
 \caption{分辨率为500米的唐山地震模拟压缩方案验证。}
@@ -553,7 +553,7 @@ $ gather\_VX $和$ unpack\_VX $），这消耗了总运行时间的1-2％。我�
 
 图~\ref {fig:weak-scaling}描述了线性和非线性情况下的地震模拟程序的弱扩展性结果。 对于这两种情况，我们使用每个CG来计算大小为160×160的网格，并逐渐扩展到整个机器。 对于弱扩展性，我们看到从8000个进程到160,000个进程中，我们几乎实现了完美的线性加速。 在没有使用实时压缩以及进行非线性地震模拟的情况下，我们可以通过使用160,000个进程来实现了15.2 Pflops的持续性能；而在线性地震模拟的情况下则为10.7 Pflops。 采用实时压缩方案后，相同的存储器带宽能够处理更多的数据，这分别进一步将线性和非线性地震模拟的性能提高至14.2 Pflops和18.9 Pflops。
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.9\columnwidth]{weak_scaling.pdf}
 \caption{线性和非线性地震模拟的弱扩展性结果。测量的MPI的进程数从8000个扩展到160,000个，其中每个CG对应于一个MPI进程。}
@@ -565,7 +565,7 @@ $ gather\_VX $和$ unpack\_VX $），这消耗了总运行时间的1-2％。我�
 图~\ref {fig:strong-scaling}显示了基于三种不同网格大小的线性，非线性，含压缩以及不含压缩情况下的强扩展性测试结果。 我们可以看到，不管是线性或非线性地震模拟，含压缩或者是不含压缩，地震模拟软件都达到了类似的强扩展性结果。但随着进程数量的不断增加，性能出现了下降。性能的下降是由两个方面造成的：（1）计算与通信的比例减小；（2）外部Halo区域与每个进程内计算的网格体积比例的减小，这降低了AWP软件的计算和通信重叠的效果。
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=1.0\columnwidth]{strong_scaling.pdf}
 \caption{线性和非线性地震模拟在三种不同的问题规模中的强扩展性结果。测量的MPI进程从8,000个扩展到16,000 个，其中每个CG上对应一个MPI进程。}
@@ -600,7 +600,7 @@ $ gather\_VX $和$ unpack\_VX $），这消耗了总运行时间的1-2％。我�
 
 为了能够完全重现唐山大地震震源附近较大区域的地震危险性分布，我们将动力破裂源作为地震波传播过程的输入，计算出较大区域的强地面运动。 我们模拟的区域是320公里乘以312公里乘40公里（约115.7$^\circ$E$\sim$119.7$^\circ$E, 38.0$^\circ$N$\sim$41.7$^\circ$N，如图\ref{fig:tangshan_region}所示），这个区域包括了唐山，北京，天津等主要城市。在本研究的地震模拟中，空间分辨率逐渐从500米增加到8米，最大频率从0.5 Hz增加到18 Hz。
 
-\begin{figure*}[h]
+\begin{figure*}[ht]
     \centering
     \begin{subfigure}[b]{0.5\textwidth}
         \centering
@@ -619,7 +619,7 @@ $ gather\_VX $和$ unpack\_VX $），这消耗了总运行时间的1-2％。我�
 
 由于动态破裂、复杂的三维介质和地质结构，地震可能产生高频能量（高达至少10 Hz）。因此具有高效的高频分量的地震图是工程地震分析的重要数据，能够为建筑物的抗震设计提供了合适的标准。
 
-\begin{figure*}[h]
+\begin{figure*}[ht]
     \includegraphics[width=1.0\columnwidth]{Snap_Vx_tangshan.pdf}\\
     \caption{速度分量（东西方向）分别在（a）T = 10秒，（b）T = 20秒，（c）T = 30秒等不同时刻地震波传播的波场快照。}
     \label{fig:strong_motion_2}
@@ -671,7 +671,63 @@ $ gather\_VX $和$ unpack\_VX $），这消耗了总运行时间的1-2％。我�
 
 我们的压缩方案将我们的计算性能扩展到了18.9 Pflops（峰值的15％），并且使我们能够支持18 Hz、8米分辨率的地震模拟。这对于以前的技术水平来说是一个巨大的飞跃。 虽然目前的压缩方案主要是针对我们的特定应用和神威架构定制的，但我们相信这个想法有很大的潜力应用于其他应用和其他架构，特别是在内存带宽成为主要限制的时代。
 
+\chapter{基于神威太湖之光的集合全波形反演方法}
 
+人工地震是由人类通过工业爆破、地下核爆炸、机械撞击等等引起的地震。与天然地震相比，人工地震具有更高的可控性，一般不会对人类经济活动造成巨大的损害。人工地震常用于研究天然地震原因和探测当地矿产资源，是地球物理勘探过程中必不可少的手段。
+
+集合全波形反演方法是地球物理勘探领域非常前沿的地质结构反演方法，与传统的全波形反演方法相比，具备更大的收敛域和更强的抗噪能力，同时也面临着更大的计算挑战。本章通过使用神威太湖之光超算来设计高效率、高可扩展性的集合全波形反演方法并行模型。
+
+\section{背景知识与算法概述}
+
+在地球物理勘探中，人们通常使用地震车或空气枪制造人工地震，地震波在地下或海洋中的不同的介质（如岩石、盐丘、水等）的分界处发生反射、折射（如图\ref{fig:offshoreseismicsurvey}所示\footnote{图片来源：http://oilnow.gy/exploration/ratio-announce-start-3d-seismic-work-kaieteur-block/，并进行适度修改。}），并最后被位于地表的地震数据采集阵列接收，接收到的数据称为地震记录。通过对人工震源函数、地震区域模型、地震记录的分析，采取一系列地震资料成像方法，如逆时偏移算法、全波形反演方法，人们可以反演“看到”所研究区域的地下介质分布，从而确定石油、天然气等重要矿产资源的位置和产量，为后续的钻井勘探提供可行参照。
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\columnwidth]{offshoreseismicsurvey.pdf}
+  \caption{地球物理勘探过程。}
+  \label{fig:offshoreseismicsurvey}
+\end{figure}
+
+\subsection{集合全波形反演方法}
+
+全波形反演方法（full waveform inversion; FWI）于1984年由Tarantola提出，能准确地从人工地震记录中提取大量地下介质信息\cite{tarantola1984inversion,plessix2012full,brossier2009seismic}。该方法通过对比数值模拟合成的地震记录和实际观测的人工地震记录误差，迭代更新模型参数，从而反演地下介质模型\cite{yushu}。然而，由于该方法伴随着巨大的计算开销，直到2010年超级计算机和NVIDIA GPU，Intel MIC等加速器的兴起，为全波形反演方法提供了足够的算力，该方法才逐渐成为研究热点，并为各大石油公司采用。
+
+尽管全波形反演方法在理论上能够很好地反演地下介质模型，但在实际生产中却面临着两大问题。一方面，全波形反演方法需要非常准确的初始速度模型作为输入，否则该算法很容易陷入局部最优\cite{virieux2009overview}。虽然地震记录中的低频信号成分能够降低对初始速度模型的要求，但是在实际生产场景中往往很难捕捉到低频信号\cite{sirgue2006importance}。另一方面全波形反演方法对地震记录数据中的噪音非常敏感，这严重影响了该算法的实际成像效果。
+
+集合全波形反演方法（EnKF）\cite{yushu,he2015ensemble}在传统完全反演\cite{tarantola1982generalized}（total inversion）的基础上，通过使用集合卡尔曼滤波\cite{evensen2003ensemble}中的集合协方差来近似完全反演中协方差算子，这降低了在完全反演中更新协方差算子的计算开销，使之可以在一般的分布式集群中进行计算。然而，由于速度模型中需要更新的参数数量比集合样本数量大2-4个数量级，集合卡尔曼滤波的更新增量受到很大的限制。对此，集合全波形反演方法再次引入了震源编码技术\cite{krebs2009fast}。震源编码技术将所有的震源和地震记录分别进行叠加，每次叠加时不同的震源和地震记录分别使用不同的震源编码，在有利于克服局部收敛的同时\cite{castellanos2014fast}，也克服了集合卡尔曼滤波低秩空间的局限性。
+
+均匀介质的声波全波形反演方法可以通过方程\ref{eq:fwi}表示：
+\begin{equation}
+\label{eq:fwi}
+  \min_{m} \phi(m) = \sum_{i=1}^S \rho(\mbox{H}_i(m) - d_{i} )，
+\end{equation}
+其中$m$表示背景速度模型，$\rho(\cdot)$是一个补偿函数，$d_i=d_1, \ldots, d_S$表示观测数据（实际接收的地震记录），$\mbox{H}_i=\mbox{H}_1, \ldots, \mbox{H}_S$则表示与之相对应的第$i{th}$个正演算子，$S$表示总勘探实验次数（每发射一炮代表一次实验）。这个优化问题通常使用如方程\ref{eq:steepest}形式的迭代算法进行求解：
+\begin{equation}
+\label{eq:steepest}
+m_{k+1} = m_{k} + \alpha_{k}s_k，
+\end{equation}
+其中$s_k$表示搜索方向，$\alpha_{k}$表示步长。常用的方法包括最速下降法、共轭梯度法等等。
+
+集合全波形反演方法在在每次速度模型更新之后，使用集合卡尔曼滤波对速度模型集合进一步更新，如方程\ref{eq:enkfupdate}所示：
+\begin{equation}
+\label{eq:enkfupdate}
+\left(\mbox{H}\Psi_k^{'}(\mbox{H}(\Psi_k^{'})^T)+D_k^{'}(D_k^{'})^T\right)^{-1}\approx\left((\mbox{H}\Psi_k^{'}+D_k^{'})(\mbox{H}\Psi_k^{'}+D_k^{'})^T\right)^{-1}.
+\end{equation}
+其中$k$表示第$k$个迭代步，$\Psi_k=(\psi_1^k,\psi_2^k,\ldots,\psi_N^k)$表示有$N$个速度模型样本组成的背景速度场，$D=(d_1^k,d_2^k,\ldots,d_N^k)$表示添加扰动之后的观测数据集合。通过SVD分解，我们有
+\begin{equation}
+\label{eq:svd}
+\mbox{H}\Psi_k^{'}+D_k^{'}=USV，
+\end{equation}
+其中$U$和$V$是正交矩阵，$S$是对角矩阵。结合方程\ref{eq:enkfupdate}和\ref{eq:svd}，我们获得集合更新方程\ref{eq:enkf2}
+\begin{equation}
+\label{eq:enkf2}
+(\Psi_a)_k=\Psi_k+\Psi_k^{'}(\mbox{H}\Psi_k^{'})^TU(SS^T)^{-1}U^T(D_k-H\Psi_k).
+\end{equation}
+其中$\Psi_a$表示分析速度场。
+
+\subsection{算法优化的主要挑战}
+\subsection{设计与优化思路}
+    
 %\include{data/chap01}
 %\include{data/chap02}
 
