@@ -20,6 +20,9 @@
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 \usepackage{silence}
+\usepackage{multirow}
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
 \WarningFilter{latex}{Float too large}
 % 定义所有的图片文件在 figures 子目录下
 \graphicspath{{figures/}}
@@ -147,8 +150,6 @@ top500 前十
 \chapter{研究现状分析}
 
 \section{异构高性能计算发展现状}
-
-\subsection{异构高性能计算架构}
 % “神威·太湖之光”
 高性能计算机的研究与应用水平是一个国家综合国力和科技创新能力的重要标志之一，我国大力推进研制具有高性能、高可靠性的超级计算机。2010年，“天河-1A”\cite{yang2011tianhe}超级计算机以峰值性能4.7 PFlops、持续性能2.5 PFlops，超越美洲虎（Jaguar）超级计算机成为我国第一台世界上最快的超级计算机。2013年，位于广州超级计算中心的“天河二号”超级计算机\cite{liao2014milkyway}以54.9 PFlops的峰值性能、33.8 PFlops的持续性能再次美国泰坦（Titan）超级计算机成为世界上最快的超级计算机，并连续 6 次蝉联世界超级计算机排名榜单 TOP500 的桂冠。2016年，国家并行计算机工程技术研究中心研制、安装在国家超级计算无锡中心的超级计算机“神威·太湖之光”\cite{fu2016sunway}以峰值性能125 PFlops、持续性能93 PFlops超越“天河二号”登顶TOP500榜单之首，并截止至2017年11月已连续四次排名第一。自2010年以来，我国超级计算机的峰值性能从“天河-1A”的4.7 PFlops迅猛提升到“神威·太湖之光”的125 PFlops，共11次问鼎TOP500榜首，标志着我国成为了世界超算大国。
 
@@ -166,9 +167,6 @@ GPU和Xeon Phi虽然浮点运算能力强，计算吞吐量高等优点，但并
 
 综上调研可知，基于片上异构高性能计算平台在计算效率、集成度、能耗比等方面给大规模科学计算提供了巨大的空间，是未来异构高性能计算研究的新兴方向之一。
 
-\subsection{异构高性能计算编程模型}
-讲讲各种编程模型
-
 \section{面向天然大地震的高性能计算研究}
 
 天然大地震灾害模拟作为高性能计算的典型的“巨大挑战”之一，是世界上大多数超级计算机的主要服务对象。大规模地震模拟的研究工作可以追溯到1996年。Bielak等人在Cray T3D的256个处理器上使用非结构化网格进行了区域大小为$140km \times 100km \times 20km$的地震模拟\citep{bao1996earthquake}，性能达到了8Tflops，这是最早的地震数值模拟工作之一。
@@ -181,58 +179,90 @@ GPU和Xeon Phi虽然浮点运算能力强，计算吞吐量高等优点，但并
 
 与其他方法相比，SeisSol中的DG-FEM算法将数值问题转化为计算受限的稠密矩阵运算，充分发挥了Intel Xeon Phi加速器的计算性能。然而，高阶数值方法也增加了计算和内存的复杂性，进一步限制了可解问题的最大尺寸和计算时间。2017年，Breuer等人使用DG-FEM方法在Cori-II超级计算机的612,000个核心上进行了超大规模融合地震模拟\citep{breuer2017edge}，峰值性能达到了10.4P Flops。
 
+近期，也有学者使用隐式有限元求解器\cite{geradin1983implicit}在日本“京”超级计算机\cite{yokokawa2011k}上探索地震模拟的潜力。
 
-近期，在日本“京”超级计算机上也有相关的工作在探索隐式有限元求解器的潜力。 T. Ichimura和他的同事们提出了GAMERA \citep {ichimura2014physics}和GOJIRA \citep {ichimura2015implicit}，后者以29.7秒的时间步长解决了超过1万亿次的自由度。利用日本“京”超级计算机的全部（663,552）个CPU核心，该求解器的全部性能达到了1.97PFlops。然而，这两种实现更多地集中在城市中的建筑物（通常大小为几十公里）和地震波放大模拟的场景上，他们并不能在数百公里范围内进行大规模的地震模拟。
+T. Ichimura等人提出了基于MPI-OpenMP的三维混合地震波放大模拟软件——GAMERA \citep {ichimura2014physics}和GOJIRA \citep {ichimura2015implicit}。GOJIRA以29.7秒的时间步长解决了超过1万亿次的自由度。利用日本“京”超级计算机的全部663,552个CPU核心，该求解器的峰值性能达到了1.97PFlops。然而，这两种实现更多地集中在城市中的建筑物（通常大小为几十公里）和地震波放大模拟的场景上，他们并不能在数百公里范围内进行大规模的地震模拟。
 
-作为世界领先的地震研究联盟，也许也是跨学科、跨国家的世界上最大的地球科学合作，南加州地震中心（Southern California Earthquake Center，SCEC）主导了地震模拟领域的一些最重要的发展。 SCEC在2004年启动了了TeraShake项目，该项目从NSF资助的TeraGrid \citep{teragrid}的2,048个处理器开始，并升级为更大规模的4万个BlueGene处理器。 TeraShake项目发现了南圣安德烈亚斯断层的破裂指向性是一个震源效应，它可能与沉积盆地的激发（场地效应）耦合，从而大大增加了洛杉矶的地震危险。他们清楚地展示了大规模地震模拟的科学效益。该项目的另一个重要成果是开源软件AWP-ODC（Anelastic Wave Propagation by Olsen, Day and Cui），后来支持众多的地震研究项目。 2010年左右，AWP-ODC的仿真能力进一步提升到了能够在千万亿次超级计算机上进行模拟\citep{cui2010scalable}。通过使用Jaguar超级计算机的223,074个计算核心，在南加州的800公里乘以400公里区域实现了一个地震模拟，模拟空间分辨率为40米，最大频率为2赫兹，持续性能为220Tflops。 2013年，AWP-ODC扩展到支持GPU加速器。对于20,480×20,480×2,048网点的问题，在Titan \citep {cui2013physics}超级计算机上通过使用16,384个GPU可以实现2.33 Pflops的持续性能。 2016年SCEC进一步完善了支持非线性效应的模拟，这是高频地震模拟中要考虑的关键因素，使用Titan \citep {roten2016high}超级计算机的一半资源，性能达到了1.6 Pflops。
+作为世界领先的地震研究联盟，也是世界上最大的跨学科、跨国家的地球科学合作结构，南加州地震中心（SCEC）在地震模拟领域取得了重大的进展。SCEC在2004年启动了TeraShake项目，该项目从美国科学基金（NSF）资助的TeraGrid超级计算机\citep{teragrid}的2,048个处理器开始，逐步将规模扩展到40,000个核心的BlueGene超算\cite{adiga2002overview}。
+TeraShake项目发现南圣安德烈亚斯断层的破裂指向性是一个震源效应，它可能与沉积盆地的激发（场地效应）耦合，从而大大增加了洛杉矶的地震危险，有效地展示了大规模地震模拟的科学效益。
 
-表 \ref{tb:rw-comp}总结了大规模地震模拟的现有工作。在大约二十年的时间里，随着机器从256个处理器发展到1000万个计算核心，问题从数百万个元素扩展到数十亿个元素（占用内存空间从GB量级扩展到了PB量级），地震模拟性能也从Gflops提高到15 Pflops。不同的软件包（SPECFEM3D的SEM，SeisSol和EDGE的DG-FEM，GAMERA和GOJIRA的隐式FEM，以及AWP-ODC的FD）采用不同的数值方法，因此我们也不可能用同一个衡量标准对他们进行统一比较。一般而言，基于有限元的方法具有更好的地形处理能力，可以用少量的网格模拟复杂的场景，但是对于非线性问题的收敛性可能会面临严重的效率问题。相比之下，有限差分（FD）方法由于其对计算和存储容量的高度需求而被认为是不切实际的解决方案，现在因为其计算规则，存储器访问和节点间通信的友好性被认为更适合于大规模并行计算环境。
+该项目的另一个重要成果是开源软件AWP-ODC\cite{awpodc}（Anelastic Wave Propagation by Olsen, Day and Cui），后来在不同的地震研究项目中被广泛使用。2010年，AWP-ODC能够支持在千万亿次超级计算机上的大规模地震模拟\citep{cui2010scalable}。Yifeng Cui等人使用Jaguar超级计算机的223,074个计算核心模拟了南加州地震，模拟区域为$810km\times 405km\times 85km$，空间分辨率为$40m$，最大频率为$2Hz$，持续性能达到了220TFlops。
 
-综合考虑所有主流的软件代码，AWP-ODC在过去的几十年里累积了SCEC的在地球物理和计算机软件的工作，提供了最先进的功能，具有良好的塑性和非弹性衰减物理特性，能够在半天内完成大规模的地震模拟。因此，在我们的工作中，我们重新设计了基于太湖之光硬件架构的AWP-ODC，这是和过去完全不同的硬件架构。在几乎所有方面（计算、内存容量、内存带宽、IO带宽、通信带宽）将机器的性能压缩到极限之后，我们将地震模拟的性能从Titan超级计算机的2.3Pflops提高到太湖光的15.2Pflops，并支持模拟比原来更大4到5倍的问题。结合我们的新提出的压缩方案，太湖之光超算的地震模拟的性能将进一步提高到18.9 Pflops，并且可以支持18赫兹频率和8米分辨率的场景。总而言之，与AWP的Titan相比，我们的工作将科学家对地震的模拟能力提高了8倍，仿真性能提高了9倍，最大的问题尺寸提高了9倍到10倍。值得注意的是，尽管太湖之光超级计算机的byte-to-float只有其他超算的五分之一或者十分之一，但是经过我们的创新和努力，使得AWP-ODC这种内存限制的应用程序也能在太湖之光上达到上述的性能。
+2013年，AWP-ODC得到了扩展并且支持GPU异构平台。Yifeng Cui等人使用了“Titan”超级计算机的16,384个GPU解决了规模为$20,480\times20,480\times2,048$个网格点的地震模拟问题，取得了2.33 PFlops的持续性能。
+
+2016年，SCEC进一步完善AWP-ODC软件，使其支持非线性效应的地震模拟，这是高频地震模拟中一大关键。R.Daniel等人使用了Titan超级计算机的一半资源进行了非线性地震模拟\citep{roten2016high}，性能达到了1.6 PFlops。
+
+表\ref{tb:rw-comp}总结了已有的大规模地震模拟工作。在大约二十年的时间里，支持地震模拟的超级计算机从256个处理器发展到如今1000万个计算核心，地震模拟的规模也从数百万个元素扩展到数十亿个元素，占用内存空间从GB量级扩展到了PB量级，地震模拟性能也从Gflops提高到15 Pflops。
 
 \begin{landscape}
-\begin{table*}[p]
-\caption{超级计算机大规模地震模拟现有工作总结。这些数字是从已发表的论文中获得的。未报告的值被标记为“-”。对于数值方法，FD指的是有限差分法，SEM指的是谱元法，DG-FEM指不连续的Galerkin有限元法。}
+\begin{table*}[ht]
+\caption{基于超级计算机的大规模地震模拟已有工作总结。这些数字是从已发表的论文中获得的。未报告的值被标记为“-”。对于数值方法，FD指的是有限差分法，SEM指的是谱元法，DG-FEM指不连续的Galerkin有限元法。}
 \label{tb:rw-comp}
 \centering
 \resizebox{1.55\textwidth}{!}{%
 \begin{tabular}{ccccccccccc}
-\hline\hline
-  \multicolumn{2}{c}{Work} & Year & Machine & Arch & Scale & \# grid points & \# DOFs & Flops & Mem & Method\\\hline\hline
-  \multicolumn{2}{c}{\citep{bao1996earthquake}} & 1996 &   Cray T3D & Alpha CPU  & 256 & 13.4 million & 40.2 million & 8 Gflops & 16 GB & FD \\
-  &&&&& processors &  &&&& \\\hline\hline
-
-  SPECFEM3D & \citep{es-gb-2003} & 2003 & Earth  & NEC SX-6 & 1,944 & 5.5 billion & 14.6 billion & 5 Tflops & 2.5 TB & SEM  \\
-  &&&Simulator&& processors &&&& \\\cline{2-11}
-   & \citep{carrington2008high} & 2008 & Ranger & 4-core Opteron & 32,000 cores & -- & -- & 28.7 Tflops & -- & SEM \\
-  & & & Jaguar &  & 29,000 cores & & & 35.7 Tflops & & \\\cline{2-11}
-  & \citep{rietmann2012forward} & 2012 & Cray XK6 & 16-core Opteron and & 896 GPUs & 8 billion & 22 billion & 135 Tflops & 3.5 T & SEM \\
-  &&&& Fermi M2090 GPU &&&&&& \\\hline\hline
-  SeiSol & \citep{tianhe2-2014gb} & 2014 & Tianhe-2 & 12-core Xeon and & 196,608 cores & 191 million & 96 billion & 8.6 Pflops & -- & DG-FEM \\
-  &&&& 59-core Xeon Phi & 1,400,832  cores &  tetrahedrons &&&& \\\cline{2-11}
-  EDGE & \citep{breuer2017edge} & 2017 & Cori-II & 68-core Xeon Phi & 612,000 cores & 341 million & -- & 10.4 Pflops & 32 TB & DG-FEM \\
-  &&&&&  &  tetrahedrons &&&& \\\hline\hline
-  GAMERA & \citep{ichimura2014physics} & 2014 & K Computer & 8-core SPARC64 & 663,552 cores & -- & 27 billion  & 0.804 Pflops & -- & implicit \\
-  &&&&&  &  &&&& FEM \\\cline{2-11}
-  GOJIRA & \citep{ichimura2015implicit} & 2015 & K Computer & 8-core SPARC64 & 663,552 cores & 270 billion & 1.08 trillion  & 1.97 Pflops & -- & implicit \\
-  &&&&& &  &&&& FEM \\\hline\hline
-  AWP-ODC & \citep{cui2010scalable} & 2010 & Jaguar & 6-core Istanbul & 223,074 cores & 436 billion & 1.31 trillion & 220 Tflops & 127 TB & FD \\
-  &&&&&  &  &&&& linear\\\cline{2-11}
-  & \citep{cui2013physics} & 2013 & Titan & 16-core Opteron and & 229,376 SMXs & 859 billion & 2.58 trillion & 2.33 Pflops & 250TB & FD  \\
-  &&&&k20x GPU & 16,384 GPUs &  &&&& linear\\\cline{2-11}
-  & \citep{roten2016high} & 2016 & Titan & same as above & 114,688 SMXs & 329 billion & 987 billion & 1.6 Pflops & 129TB & FD \\
- &&&&&  8,192 GPUs &  &&&& non-linear \\\hline\hline
- our work & without & 2017 & Sunway & 260-core SW26010 & 1,014,000 cores & 3.99 trillion & 11.98 trillion & 15.2 Pflops & 892 TB & FD \\
- &compression&&TaihuLight&& &  &&&& non-linear \\
- & with compression &  &  &  & & 7.8 trillion & 23.4 trillion &  18.9Pflops & 724TB & \\\hline\hline
+\hline
+\multicolumn{2}{c}{工作} & 时间 & 平台 & 架构 & 规模 & 网格点数 & 自由度 & 性能 & 内存 & 数值方法 \\ \hline\hline
+EGMM & \cite{bao1996earthquake} & 1996 & Cray T3D & Alpha CPU & 256 CPU & 1340万 & 4020万 & 8 Gflops & 16 GB & FD \\ \hline\hline
+\multirow{4}{*}{SPECFEM3D} & \citep{es-gb-2003} & 2003 & 地球模拟器 & NEC SX-6 & 1,944 CPU & 55亿 & 146亿 & 5 Tflops & 2.5 TB & SEM \\ \cline{2-11}
+ & \multirow{2}{*}{\citep{carrington2008high}} & 2008 & Ranger & 4核Opteron & 32,000核 & -- & -- & 28.7 Tflops & -- & SEM \\
+ & & 2008 & Jaguar & 4核Opteron & 29,000核 & -- & -- & 35.7 Tflops & -- & SEM \\ \cline{2-11}
+ & \citep{rietmann2012forward} & 2012 & Cray XK6 & Nvidia Fermi & 896 GPUs & 80亿 & 220亿 & 135 Tflops & 3.5 T & SEM \\ \hline\hline
+\multirow{2}{*}{SeiSol} & \multirow{2}{*}{\citep{tianhe2-2014gb}} & \multirow{2}{*}{2014} & \multirow{2}{*}{Tianhe-2} & 12核Xeon + & 196,608核 & 1.91亿 & \multirow{2}{*}{960亿} & \multirow{2}{*}{8.6 Pflops} & \multirow{2}{*}{--} & \multirow{2}{*}{DG-FEM} \\
+ & & & & 59核Xeon Phi & 1,400,832核 & 四面体 & & & & \\ \cline{2-11}
+\multirow{2}{*}{EDGE} & \multirow{2}{*}{\citep{breuer2017edge}} & \multirow{2}{*}{2017} & \multirow{2}{*}{Cori-II} & \multirow{2}{*}{68核Xeon Phi} & \multirow{2}{*}{612,000核} & 3.41亿 & \multirow{2}{*}{--} & \multirow{2}{*}{10.4 Pflops} & \multirow{2}{*}{32 TB} & \multirow{2}{*}{DG-FEM} \\
+ & & & & & & 四面体 & & & & \\ \hline\hline
+GAMERA & \citep{ichimura2014physics} & 2014 & K Computer & 8核SPARC64 & 663,552核 & -- & 270亿 & 0.804 Pflops & -- & 隐式FEM \\ \cline{2-11}
+GOJIRA & \citep{ichimura2015implicit} & 2015 & K Computer & 8核SPARC64 & 663,552核 & 2700亿 & 1.08万亿 & 1.97 Pflops & -- & 隐式FEM \\ \hline\hline
+\multirow{6}{*}{AWP-ODC} & \multirow{2}{*}{\citep{cui2010scalable}} & \multirow{2}{*}{2010} & \multirow{2}{*}{Jaguar} & \multirow{2}{*}{6核Istanbul} & \multirow{2}{*}{223,074核} & \multirow{2}{*}{4360亿} & \multirow{2}{*}{1.31万亿} & \multirow{2}{*}{220 Tflops} & \multirow{2}{*}{127 TB} & FD \\
+ & & & & & & & & & & 线性 \\ \cline{2-11}
+ & \multirow{2}{*}{\citep{cui2013physics}} & \multirow{2}{*}{2013} & \multirow{2}{*}{Titan} & 16核Opteron + & 229,376 SMXs & \multirow{2}{*}{8590亿} & \multirow{2}{*}{2.58万亿} & \multirow{2}{*}{2.33 Pflops} & \multirow{2}{*}{250TB} & FD \\
+ & & & & Nvidia K20x & 16,384 GPUs & & & & & 线性 \\ \cline{2-11}
+ & \multirow{2}{*}{\citep{roten2016high}} & \multirow{2}{*}{2016} & \multirow{2}{*}{Titan} & 16核Opteron + & 114,688 SMXs & \multirow{2}{*}{3290亿} & \multirow{2}{*}{9870亿} & \multirow{2}{*}{1.6 Pflops} & \multirow{2}{*}{129TB} & FD \\
+ & & & & Nvidia K20x & 8,192 GPUs & & & & & 非线性 \\ \hline\hline
+\multirow{4}{*}{本文工作} & \multirow{2}{*}{无压缩} & \multirow{2}{*}{2017} & \multirow{2}{*}{太湖之光} & 260核 & \multirow{2}{*}{1,014,000核} & \multirow{2}{*}{3.99万亿} & \multirow{2}{*}{11.9万亿} & \multirow{2}{*}{15.2 Pflops} & \multirow{2}{*}{892 TB} & FD \\
+ & & & & SW26010 & & & & & & 线性 \\ \cline{2-11}
+ & \multirow{2}{*}{含压缩} & \multirow{2}{*}{2017} & \multirow{2}{*}{太湖之光} & 260核 & \multirow{2}{*}{1,014,000核} & \multirow{2}{*}{7.8万亿} & \multirow{2}{*}{23.4万亿} & \multirow{2}{*}{18.9Pflops} & \multirow{2}{*}{724TB} & FD \\
+ & & & & SW26010 & & & & & & 非线性 \\\hline\hline
 \end{tabular}
 }
 \end{table*}
 \end{landscape}
 
+
+此外，不同的软件包（如SPECFEM3D的SEM，SeisSol和EDGE的DG-FEM，GAMERA和GOJIRA的隐式有限元，以及AWP-ODC的有限差分）采用不同的数值方法，因此不可能用一个衡量标准对他们进行统一比较。一般而言，基于有限元的方法具有更好的地形处理能力，可以用少量的网格模拟复杂的场景，但是对于非线性问题的收敛性可能会面临严重的效率问题。相比之下，有限差分（FD）方法计算方式规则、内存访问和节点间通信友好，但由于其对计算和存储容量的高度需求而一度被认为是不切实际的解决方案。近些年来，随着超算的发展有限差分方法被普遍认为更适合大规模并行计算。
+
+综上考虑所有主流的地震模拟软件，AWP-ODC在过去的几十年里累积了大量SCEC在地球物理和计算机的工作，提供了最先进的功能，支持塑性和非弹性衰减物理特性，且能够在半天内完成大规模的地震模拟。
+
+因此，本文工作以AWP-ODC为原型，根据太湖之光独特的硬件架构进行了重新设计并进行深度优化，将神威超算的计算、内存容量、内存带宽、IO带宽和通信带宽等资源都发挥到了极致。本文工作的地震模拟性能从Titan超级计算机的2.3 Pflops提高到太湖光的15.2 Pflops，并支持模拟比原来更大4到5倍的算例。此外，本文工作还提出了基于异构众核架构的实时压缩方案，将地震模拟的性能进一步提升到了18.9 PFlops，支持的最大频率和最高分辨率分别提升到了$18Hz$和$8m$。与2013年和2016年在Titan超级计算机上的AWP工作相比，本文工作将地震仿真性能提高了9倍，最大的可解问题尺寸提高了9倍到10倍。
+
+
+
 \section{面向人工地震勘探的高性能计算研究}
 
+人工地震勘探由于具备巨大的商业推动，是高性能计算最重要的应用之一。自上个世纪90年代末以来，人工地震勘探的偏移和成像算法的应用在高性能计算的推动下取得了巨大的进展，对计算、内存、IO的需求也呈指数级增长。以Kirchhoff三维叠前深度偏移\cite{yilmaz2001seismic}的计算量为参考标准，共方位角波动方程偏移\cite{rickett2002offset}在精度和分辨率上比Kirchhoff方法更有优势，其计算量约为后者的2倍；共炮域波动方程叠前深度偏移\cite{zhang2005theory}在复杂构造地区的成像效果要好于Kirchhoff叠前深度偏移，但其计算量约为后者的10倍。2003年，Y. Sun等人提出射线偏移算法\cite{sun20003}对道集以组的形式进行处理，极大的降低了计算需求。2010年左右，由于高性能计算机的迅猛发展，基于声波的逆时偏移算法\cite{baysal1983reverse}能以更高分辨率、更精确的成像效果备受学术界和工业界的青睐，其计算量约为传统Kirchhoff算法的100倍。近些年来，全波形反演算法\cite{tarantola1984inversion}以其理论的完备性成为研究热点。图\ref{fig:seismicmethod}展示了近20年来人工地震勘探算法对运算速度需求的变化趋势。
 
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.7\columnwidth]{seismicmethod.png}
+\caption{人工地震勘探算法对运算速度需求的变化趋势。}
+\label{fig:seismicmethod}
+\end{figure}
+
+全波形反演方法（full waveform inversion; FWI）于1984年由Tarantola提出，能准确地从人工地震记录中提取大量地下介质信息\cite{tarantola1984inversion,plessix2012full,brossier2009seismic}。该方法通过对比数值模拟合成的地震记录和实际观测的人工地震记录误差，迭代更新模型参数，从而反演地下介质模型\cite{yushu}。然而，由于该方法伴随着巨大的计算开销，直到2010年超级计算机和NVIDIA GPU，Intel MIC等加速器的兴起，为全波形反演方法提供了足够的算力，该方法才逐渐成为研究热点，并为各大石油公司采用。
+
+尽管全波形反演方法在理论上能够很好地反演地下介质模型，但在实际生产中却面临着两大问题。一方面，全波形反演方法需要非常准确的初始速度模型作为输入，否则该算法很容易陷入局部最优\cite{virieux2009overview}。虽然地震记录中的低频信号成分能够降低对初始速度模型的要求，但是在实际生产场景中往往很难捕捉到低频信号\cite{sirgue2006importance}。另一方面全波形反演方法对地震记录数据中的噪音非常敏感，这严重影响了该算法的实际成像效果。
+
+本文工作在传统完全反演\cite{tarantola1982generalized}（total inversion）的基础上，通过使用集合卡尔曼滤波\cite{evensen2003ensemble}中的集合协方差来近似完全反演中协方差算子，提出了集合全波形反演方法（EnKF）\cite{yushu,he2015ensemble}。集合全波形反演方法有效降低了在完全反演中更新协方差算子的计算开销，使之可以在一般的分布式集群中进行计算。然而，由于速度模型中需要更新的参数数量比集合样本数量大2-4个数量级，集合卡尔曼滤波的更新增量受到很大的限制。对此，集合全波形反演方法再次引入了震源编码技术\cite{krebs2009fast}。震源编码技术将所有的震源和地震记录分别进行叠加，每次叠加时不同的震源和地震记录分别使用不同的震源编码，在有利于克服局部收敛的同时\cite{castellanos2014fast}，也克服了集合卡尔曼滤波低秩空间的局限性。
+
+
+地震波正演、逆时偏移、全波形反演等地球物理勘探算法的核心计算是使用显式的有限差分算法更新地震波波场。近些年来，有一系列基于GPU、Xeon Phi和FPGA异构高性能平台的有限差分算法或$Stencil$加速工作，并取得了非常理想的性能结果\cite{qawasmeh2015gpu,martinez2015towards,fang2015optimizing,liu20153d,clapp2015seismic,costa2015half,fu2012revisiting,clapp2010selecting}。例如，J.Fang等人在GPU平台对复杂$Stencil$计算进行优化，相比于12核CPU取得了9.6倍的性能提升\cite{fang2015optimizing}。A.Qawasmeh等人在GPU平台上使用OpenACC工具移植和优化基于波场方程的逆时偏移算法，取得了比CPU快10倍的性能提升\cite{qawasmeh2015gpu}。Y.Yang等人在Xeon Phi平台优化了三维弹性波正演方法，取得了相对于12核CPU 3.7倍的性能提升。\cite{you2013accelerating}。H.FU等人在FPGA平台上优化了逆时偏移算法，取得了与72核CPU相当的性能，并获得了10倍的能耗比提升。
+
+上述的优化工作主要侧重于使用高性能异构加速器提升算法的性能，而基于硬件的算法加速效果受限于加速设备的性能，容易达到瓶颈。本文工作通过对地震波长传播原理出发、结合具体传播场景，利用地震波在地球内部传播 时能量会随着时间不断衰减的性质，结合稳定性和频散约束条件，不断调整空间采样，从算法层面进一步提升了地震传播的性能。此外，本文工作使用神威超计算机对优化后的算法进行优化，获得了相比原始CPU算法超过2个数量级的性能提升。
+
+\section{本章小结}
+
+通过对世界领先超算的介绍可以看到，异构计算架构已经逐渐成为超级计算机的主流架构，并为不同领域的科学应用提供丰富的算力。神威太湖之光超级计算机以高运算效率、高能耗比大幅领先排名第二的超级计算机，基于片上异构架构的超级计算机有望成为未来E级计算的主流架构。天然地震模拟和人工地震勘探算法都对高性能计算提出了巨大的需求和挑战，基于神威太湖之光超级计算机的天然地震模拟和人工地震勘探算法优化具有非常重要的研究意义。
 
 \chapter{面向神威异构众核超算的并行优化方法概述}
 
@@ -267,7 +297,7 @@ GPU和Xeon Phi虽然浮点运算能力强，计算吞吐量高等优点，但并
 
 % Please add the following required packages to your document preamble:
 % \usepackage{graphicx}
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{太湖之光超级计算机系统基础参数。}
 \label{tb:sunwaystat}
@@ -453,9 +483,9 @@ AWP-ODC求解速度和应力张量耦合的偏微分方程，令
 表示波场中质点的速度向量，且令
 \begin{equation}
   \sigma = \begin{pmatrix}
-\sigma_{xx} & \sigma_{xy} & \sigma_{xz} \\ 
-\sigma_{yx} & \sigma_{yy} & \sigma_{yz} \\ 
-\sigma_{zx} & \sigma_{zy} & \sigma_{zz} 
+\sigma_{xx} & \sigma_{xy} & \sigma_{xz} \\
+\sigma_{yx} & \sigma_{yy} & \sigma_{yz} \\
+\sigma_{zx} & \sigma_{zy} & \sigma_{zz}
 \end{pmatrix}
 \end{equation}
 为对称应力张量，则弹性动力学方程为
@@ -885,7 +915,7 @@ AWP-ODC第一版使用同步MPI通信模型。同步通信模型中的通信路�
 \begin{algorithmic}[1]
 \State \textbf{// 16位半精度转32位单精度}
 \State uint32\_t \textbf{float16\_to\_float32}(uint16\_t h) \{
-\State \quad\quad return ((h\&0x8000)<<16) | (((h\&0x7c00)+0x1C000)<<13) | ((h\&0x03FF)<<13); 
+\State \quad\quad return ((h\&0x8000)<<16) | (((h\&0x7c00)+0x1C000)<<13) | ((h\&0x03FF)<<13);
 \State \}
 \State
 \State \textbf{// 32位单精度转16位半精度}
@@ -922,7 +952,7 @@ IEEE单精度-半精度的转换算法简明高效，但由于半精度浮点数
 在IEEE标准的单精度浮点数表示中，大部分为归一化数（normalized value）。令符号位、指数位、尾数位分别为$S$、$E$和$F$，则归一化浮点数的数值为
 \begin{equation}
   f(S,F,E) = (-1)^S \cdot 1.F^{E-127}
-\label{eq:floatrepresent}  
+\label{eq:floatrepresent}
 \end{equation}
 
 浮点数归一化压缩方法对浮点数进行归一化，将同一数组的所有值归一化到1到2之间的范围（如公式\ref{eq:floatnormalized}所示），根据则归一化浮点数的表示方法（公式\ref{eq:floatrepresent}）可知，该浮点数的指数位$E$恒等于127。
@@ -1555,7 +1585,7 @@ $pack$函数是进行MPI通信前，将波场边界的不连续数据拷贝到�
 \label{tb:伪三维Marmousi模型正演反演数值模拟参数}
 \begin{tabular}{cccccc}
 \hline
-参数 & 反演范围($km^3$) & 分辨率 & 网格大小        & 震源频率 & 正演时长 \\\hline 
+参数 & 反演范围($km^3$) & 分辨率 & 网格大小        & 震源频率 & 正演时长 \\\hline
 配置 & 9.2*3.0*5     & 10m   & 920*300*500   & 10Hz    & 3s  \\\hline
 \end{tabular}
 \end{table}
@@ -1766,7 +1796,7 @@ Marmousi的精确速度模型如图\ref{fig:Marmousi精确模型}所示。我们
   \item 使用传统的Laplacian算子近似分数阶的Laplacian算子，降低了计算复杂度；
   \item 推导的过程中，忽略了公式\ref{eq:zhu}中的频散项，但几乎不会对计算精度造成影响\cite{shen2015image}；
   \item 保留了原来的三维弹性波方程正演的计算流程，仅在计算张力和应力张量时添加了额外的计算项。
-\end{itemize}  
+\end{itemize}
 
 数值试验模拟需要对上述公式进行离散化。本文定义计算网格的大小为$N_x \times N_y \times N_z$，地震波传播的时间步为$N_t$，地震波场中的任意时刻任意点可以表述为$(x,y,z|t)=(p\Delta x,q\Delta y, r\Delta z| n\Delta t)$，其中计数器$p,q,r,n$的范围为$p=[1,N_x], q=[1,N_y], r=[1,N_z], n=[1,N_t]$。则连续地震波波场位移中的任意一点通过离散网格表示为：
 \begin{equation}
@@ -1797,7 +1827,7 @@ Marmousi的精确速度模型如图\ref{fig:Marmousi精确模型}所示。我们
 %\footnotesize
 \small
 \caption{基于常数衰减近似的地震波正演伪代码} \label{alg:qforward}
-\begin{algorithmic}[1] 
+\begin{algorithmic}[1]
 \State \textbf{// 将地震波完整传播时间分成nb块，每一块有不同的网格分辨率和地震波传播范围}
 \State \textbf{for} (ib = 0; ib < nb; ib++) \{ \label{ln:qfwdnb}
 \State \quad\quad cal\_max\_freq\_for\_timeblock(); \textbf{// 计算当前时间块地震波剩余最大频率} \label{ln:calfreq}
@@ -1806,9 +1836,9 @@ Marmousi的精确速度模型如图\ref{fig:Marmousi精确模型}所示。我们
 \State \quad\quad resample(); \textbf{// 将旧网格按照新空间分辨率插值得到新网格} \label{ln:resample}
 \State \quad\quad
 \State \quad\quad \textbf{for} (t = ib * nbt; t < ib * nbt + int; t++) \{ \textbf{// 每个时间块中执行常规正演运算} \label{ln:tbbegin}
-\State \quad\quad\quad\quad fwd\_prop\_appr\_q(); \textbf{// Q近似波场更新}   
+\State \quad\quad\quad\quad fwd\_prop\_appr\_q(); \textbf{// Q近似波场更新}
 \State \quad\quad\quad\quad inject\_src(); \textbf{// 添加震源激励}
-\State \quad\quad\quad\quad \textbf{if} (is\_imaging\_step(t)) 
+\State \quad\quad\quad\quad \textbf{if} (is\_imaging\_step(t))
 \State \quad\quad\quad\quad\quad\quad save\_wavefield(); \textbf{// 为RTM成像存储波场} \label{ln:savewavefield}
 \State \quad\quad \} \label{ln:tbend}
 \State \} \label{ln:qfwdnbend}
