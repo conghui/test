@@ -1,0 +1,114 @@
+\thusetup{
+  %******************************
+  % 注意：
+  %   1. 配置里面不要出现空行
+  %   2. 不需要的配置信息可以删除
+  %******************************
+  %
+  %=====
+  % 秘级
+  %=====
+  secretlevel={秘密},
+  secretyear={10},
+  %
+  %=========
+  % 中文信息
+  %=========
+  ctitle={面向神威太湖之光的地震应用并行优化方法研究},
+  cdegree={工学博士},
+  cdepartment={计算机科学与技术系},
+  cmajor={计算机科学与技术},
+  cauthor={何聪辉},
+  csupervisor={付昊桓副教授},
+  %cassosupervisor={陈文光教授}, % 副指导老师
+  %ccosupervisor={某某某教授}, % 联合指导老师
+  % 日期自动使用当前时间，若需指定按如下方式修改：
+  %cdate={2018年03月},
+  %
+  % 博士后专有部分
+  % cfirstdiscipline={计算机科学与技术},
+  % cseconddiscipline={系统结构},
+  % postdoctordate={2009年7月——2011年7月},
+  % id={编号}, % 可以留空： id={},
+  % udc={UDC}, % 可以留空
+  % catalognumber={分类号}, % 可以留空
+  %
+  %=========
+  % 英文信息
+  %=========
+  etitle={Accelerating the Seismic Applications on Sunway TaihuLight Supercomputer},
+  % 这块比较复杂，需要分情况讨论：
+  % 1. 学术型硕士
+  %    edegree：必须为Master of Arts或Master of Science（注意大小写）
+  %             “哲学、文学、历史学、法学、教育学、艺术学门类，公共管理学科
+  %              填写Master of Arts，其它填写Master of Science”
+  %    emajor：“获得一级学科授权的学科填写一级学科名称，其它填写二级学科名称”
+  % 2. 专业型硕士
+  %    edegree：“填写专业学位英文名称全称”
+  %    emajor：“工程硕士填写工程领域，其它专业学位不填写此项”
+  % 3. 学术型博士
+  %    edegree：Doctor of Philosophy（注意大小写）
+  %    emajor：“获得一级学科授权的学科填写一级学科名称，其它填写二级学科名称”
+  % 4. 专业型博士
+  %    edegree：“填写专业学位英文名称全称”
+  %    emajor：不填写此项
+  edegree={Doctor of Philosophy},
+  emajor={Computer Science and Technology},
+  eauthor={Conghui He},
+  esupervisor={Associate Professor Haohuan Fu},
+  %eassosupervisor={Chen Wenguang},
+  % 日期自动生成，若需指定按如下方式修改：
+  %edate={March, 2018}
+  %
+  % 关键词用“英文逗号”分割
+  %ckeywords={天然地震, 地震勘探, 高性能计算, 算法, 并行优化, 全波形反演, 正演, 体系结构, 加速},
+  %ekeywords={\TeX, \LaTeX, CJK, template, thesis}
+}
+
+% 定义中英文摘要和关键字
+\begin{cabstract}
+千百年来，天然大地震一直严重威胁着人类社会的安全。天然大地震以其范围广、突发性强、次生灾害严重，对一个国家的社会生活和经济活动造成巨大的冲击。另一方面，人工地震勘探是开发石油、天然气等化石能源的主要手段。油气资源的开采是保证国家能源供应、维持工业生产正常运行的基础，同时也是事关国民经济发展、社会稳定以及国家安全的重要因素。数值模拟一直是地震研究的主要手段，近年来地震模拟的范围、分辨率和数据量不断增长，基于高性能计算平台的并行优化方法面临着严峻的计算、存储、带宽、通信和IO等挑战。
+
+“神威·太湖之光”超级计算机采用我国自主研制的申威26010片上异构众核处理器，在性能、规模、互联和能效上均展现出独特的优势，为大规模地震研究提供了理想的研究平台，而性能功耗片上异构众核架构也或成为未来超级计算机发展的趋势。
+
+本文工作以神威太湖之光超级计算机为目标运行和优化平台，研究超高分辨率非线性唐山大地震模拟和地震物探算法，并提出一系列面向片上异构众核架构的优化方法，将天然地震和人工地震模拟的规模、性能、分辨率和精度都推上了一个新的台阶。本文主要贡献包括：
+  \begin{itemize}
+    \item 提出基于神威太湖之光的非线性大地震完整软件框架。
+    该框架各模块基于神威太湖之光的独特架构进行了深度优化，成功地使用神威超算千万核心高效模拟了唐山大地震，模拟的分辨率高达$8m$，性能高达$18.9PFlops$。据笔者所知，这是世界上相同模拟氛围内最大规模，最高分辨率，最精确的非线性地震模拟。
+    \item 提出用于地震勘探成像的集合全波形反演方法。集合全波形反演方法以传统全波形反演方法的基础上结合集合卡尔曼滤波和震源编码算法，具有更大的收敛域和更低的噪音敏感度。在神威超算上进行了一系列优化后获得了一个数量级的性能提升。
+    \item 提出了地震传播衰减近似算法。使用常数衰减因子对地震波能量在传播中衰减的特征，并结合稳定性和频散条件，不断增大地震波场的时空分辨率，提升计算效率。该工作在神威超算上进行了并行设计和优化，取得了70至200倍的性能提升。
+  \end{itemize}
+
+  %\item 集合全波形反演方法以传统全波形反演方法为基础，使用集合卡尔曼滤波中的集合协方差来近似完全反演中协方差算子，并引入震源编码算法克服局部收敛、提高运算效率。集合全波形反演方法具有更大的收敛域和更低的噪音敏感度。该工作还提出了基于神威超算系统的一系列优化：包括基于集合样本的多层级并行任务分解、面向$Stencil$的 LDM 高效数据复用、随机边界条件以及其他优化方法等等，优化后获得了一个数量级的性能提升。
+
+  %\item 提出了地震传播衰减近似算法。该工作利用地震波在地球内部传播时能量会随着时间不断衰减的特征，使用常数衰减因子对其近似，并结合稳定性条件和频散条件，在地震波传播中不断增大时空分辨率，以达到提升性能的目的。此外，根据地震波早期传播范围的有效性，限制有效更新波场范围，进一步提升了计算性能。最后，该工作在神威超算上进行了并行设计和优化，将最终性能提升到了一个新的高度。深度优化后的常数衰减近似正演算法取得了70至200倍的性能提升。
+
+\end{cabstract}
+
+% 如果习惯关键字跟在摘要文字后面，可以用直接命令来设置，如下：
+ \ckeywords{地震, 高性能计算, 神威太湖之光, 并行优化, 算法设计}
+
+\begin{eabstract}
+   While science has made significant progresses in various domains in the current and last century, the interior of the earth still remains largely unknown to the scientists. As a result, the earthquakes, which are significant disasters leading to huge losses in various aspects, are still among the ultimate scientific challenges that wait for deciphering of their development mechanisms and formation of scientific prediction capabilities. Moreover, the lack of understanding of the earth makes it challenging in finding the oil and gas from the undergrounds especially in complex areas.  Thus, the capability of simulating the seismic wave propagation in an accurate way is a key factor along the process of resolving the mysteries of earthquakes and imaging the undergrounds.In recent years, the scope, resolution, and data volume of seismic simulation have been continuously increasing. Parallel optimization methods based on high-performance computing platforms face severe challenges such as computation, storage, bandwidth, communication, and IO. 
+
+   %Moreover, such a simulation framework would provide quantified evaluation of potential earthquake hazards, and can then be coupled to other engineering models to performance extensive risk evaluation, and to provide guidance on the designs of resilient utility systems in seismically active regions.
+
+%Seismic imaging is a tool that bounces sound waves off underground rock structures to reveal possible crude oil– and natural gas–bearing formations.
+
+
+The "Sunway TaihuLight" supercomputer adopts China's homegrown SW2610 on-chip heterogeneous processors, and exhibits unique advantages in terms of performance, scale, interconnection and energy efficiency. It is an ideal platform for simulating the seismic applications. 
+
+This thesis reports our efforts on porting and redesiging the seismic applications on the world's No.1 supercomputer, the Sunway TaihuLight, which achieves significantly improved simulation capabilities with the increased computing power of 125 Pflops of this new system. The main contributions are as follows:
+
+\begin{itemize}
+  \item a software framework on Sunway TaihuLight that can support both the generation of dynamic ruptures, and the simulation of the seismic wave propagation in a massively parallel way. The framework employs a set of optimizations on Sunway TaihuLight such as the parallelization scheme, memory scheme and the compression scheme. With these innovations, our software demonstrates a sustained performance of over 18.9 Pflops, enabling the simulation of Tangshan earthquake as an 18-Hz scenario with an 8-meter resolution.
+
+  \item the ensemble full wave inversion algorithm with source encoding (EnFWI). In this method, we use model ensemble to approximate the nonlinear evolution of the covariance in total inversion. Encoded simultaneous-source FWI then is applied to refine the model ensemble to improve the representation for the low rank approximation, and to increase the rate of convergence. With a carefully design and optimization on Sunway TaihuLight, our EnFWI algorithm achives a speedup of over one order of magnitude.
+
+  \item a high performance design of accelerating the wavefield propagation in 3D elastic media by approximating the constant Q propagation. We first propose the Q approximation formulation by extending the formulation from the 2D viscoelastic to the 3D viscoelastic case where the fractional Laplacian is approximated to the conventional Laplacian and the dispersion term is ignored. Optimization strategies from different aspects (memory, occupancy, and overlapping) are performed to form an efficient kernel on Sunway TaihuLight. Combining all the optimization schemes, we can achieve a significant speedup of 70 to 200 times over a highly optimized MPE solution for the 3D elastic wavefield propagation.
+
+\end{itemize}
+
+\end{eabstract}
+
+\ekeywords{Seismic Applications, High Performance Optimization, Sunway TaihuLight, Algorithm Design}
