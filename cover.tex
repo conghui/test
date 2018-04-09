@@ -68,7 +68,7 @@
 
 % 定义中英文摘要和关键字
 \begin{cabstract}
-天然大地震的破坏范围广、突发性强、次生灾害严重，不仅剧烈地冲击着国家的社会生活和经济活动，也对人们的心理也造成了重大的影响。水能覆舟亦能载舟，局部的人工地震却是勘探石油天然气等化石能源的重要手段。地震模拟研究不仅可以深入理解地球内部结构和地震演变机制、定量评估地震风险，还能有助于油气资源的开采，保证国家能源供应和维持工业生产正常运行。“神威·太湖之光”超级计算机采用我国自主研制的申威26010片上异构众核处理器，是世界上首台峰值性能超过十亿亿次的超级计算机，在性能、规模和能效上均展现出独特的优势。地震模拟作为超级计算机的主要服务对象，一直以来都是高性能计算的主要挑战之一。近年来随着超级计算机的规模不断扩大、架构持续更新，科学家对模拟精度、时间和空间分辨率的需求也不断提升，面向十亿亿次异构架构超级计算机的地震模拟研究也面临着前所未有的巨大挑战。
+天然大地震的破坏范围广、突发性强、次生灾害严重，不仅剧烈地冲击着国家的社会生活和经济活动，也对人们的心理造成了重大的影响。水能覆舟亦能载舟，局部的人工地震却是勘探石油与天然气等化石能源的重要手段。地震模拟研究不仅可以深入理解地球内部结构和地震演变机制、定量评估地震风险，还能有助于油气资源的开采，保证国家能源供应和维持工业生产正常运行。“神威·太湖之光”超级计算机采用我国自主研制的申威26010片上异构众核处理器，是世界上首台峰值性能超过十亿亿次的超级计算机，在性能、规模和能效上均展现出独特的优势。地震模拟作为超级计算机的主要服务对象，一直以来都是高性能计算的主要挑战之一。近年来随着超级计算机的规模不断扩大、架构持续更新，科学家对模拟精度、时间和空间分辨率的需求也不断提升，面向十亿亿次异构架构超级计算机的地震模拟研究也面临着前所未有的巨大挑战。
 %“神威·太湖之光”为各类科学应用提供了强大的算力支撑
 
 
@@ -76,7 +76,7 @@
   \begin{itemize}
     \item 提出分时动态区域变分辨率正演方法和集合全波形反演方法，从算法层面优化正演效率，并作为反演的基础。集合全波形反演方法同时提升了反演效率和反演准确率。
     
-    \item 提出了面向申威异构众核处理器的地震正演并行优化方法，分别从降低内存传输总量和提升内存传输带宽突破申威处理器的内存墙。然后提出了实时压缩方案，在可接受的精度损失下支持更大规模的地震模拟，将应用程序的可用内存大小和带宽提升到全新的高度。
+    \item 提出了面向申威异构众核处理器的地震正演并行优化方法，分别从降低内存传输总量和提升内存传输带宽两方面打破申威处理器的内存墙。然后提出实时压缩方案，在可接受的精度损失下能支持更大规模的地震模拟，将应用程序的可用内存大小和带宽提升到全新高度。
     
     \item 提出了面向神威超算的大规模并行优化方法高效地将地震模拟从单核心扩展到神威超算上千万核心，并提出大规模的通信和IO优化方案。
 
@@ -98,11 +98,11 @@
 \begin{itemize}
   \item a high performance design of accelerating the wavefield propagation in 3D elastic media by approximating the constant Q propagation as well as the ensemble full wave inversion algorithm with source encoding (EnFWI). 
 
-  \item An elaborate memory scheme that breaks the memory wall on SW26010 as well as an on-the-fly compression scheme that pushes the application-available memory size and bandwidth to the next level, and expands both the highest performance and the largest problem size we can achieve on Sunway TaihuLight.
+  \item an elaborate memory scheme that breaks the memory wall on SW26010 as well as an on-the-fly compression scheme that pushes the application-available memory size and bandwidth to the next level. The compression scheme expands both the highest performance and the largest problem size we can achieve on Sunway TaihuLight.
 
   \item a customized parallelization scheme that employs the 10 million cores efficiently at both the process level and the thread level as well as a complete set of solutions for communication and IO challenges.
 
-  \item two use cases including a seismic simulation framework on Sunway TaihuLight that simulates the Tangshan earthquake in a massively parallel way, and an earth imaging scenario that invert the Marmousi model using EnFWI method we proposed. 
+  \item two use cases including a seismic simulation framework on Sunway TaihuLight that simulates the Tangshan earthquake in a massively parallel way, and an earth imaging scenario that inverts the Marmousi model using the EnFWI method we proposed. 
 
 \end{itemize}
 
