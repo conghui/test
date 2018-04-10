@@ -15,7 +15,7 @@
   %=========
   % 中文信息
   %=========
-  ctitle={面向国产异构众核架构的地震模拟并行优化方法研究},
+  ctitle={面向神威·太湖之光的地震模拟并行优化方法研究},
   cdegree={工学博士},
   cdepartment={计算机科学与技术系},
   cmajor={计算机科学与技术},
@@ -37,7 +37,7 @@
   %=========
   % 英文信息
   %=========
-  etitle={Accelerating the Seismic Simulations on China's Homegrown Heterogeneous Many-core Architecture},
+  etitle={Accelerating the Seismic Simulations on Sunway TaihuLight Supercomputer},
   % 这块比较复杂，需要分情况讨论：
   % 1. 学术型硕士
   %    edegree：必须为Master of Arts或Master of Science（注意大小写）
@@ -68,7 +68,7 @@
 
 % 定义中英文摘要和关键字
 \begin{cabstract}
-天然大地震的破坏范围广、突发性强、次生灾害严重，不仅剧烈地冲击着国家的社会生活和经济活动，也对人们的心理造成了重大的影响。水能覆舟亦能载舟，局部的人工地震却是勘探石油与天然气等化石能源的重要手段。地震模拟研究不仅可以深入理解地球内部结构和地震演变机制、定量评估地震风险，还能有助于油气资源的开采，保证国家能源供应和维持工业生产正常运行。“神威·太湖之光”超级计算机采用我国自主研制的申威26010片上异构众核处理器，是世界上首台峰值性能超过十亿亿次的超级计算机，在性能、规模和能效上均展现出独特的优势。地震模拟作为超级计算机的主要服务对象，一直以来都是高性能计算的主要挑战之一。近年来随着超级计算机的规模不断扩大、架构持续更新，科学家对模拟精度、时间和空间分辨率的需求也不断提升，面向十亿亿次异构架构超级计算机的地震模拟研究也面临着前所未有的巨大挑战。
+天然大地震的破坏范围广、突发性强、次生灾害严重，不仅剧烈地冲击着国家的社会生活和经济活动，也对人们的心理造成了重大的影响。水能覆舟亦能载舟，局部的人工地震却是勘探石油与天然气等化石能源的重要手段。地震模拟研究不仅可以深入理解地球内部结构和地震演变机制、定量评估地震风险，还能有助于油气资源的开采，保证国家能源供应和维持工业生产正常运行。“神威·太湖之光”超级计算机采用我国自主研制的申威26010片上异构众核处理器，是世界上首台峰值性能超过十亿亿次的超级计算机，在性能、规模和能效上均展现出独特的优势。地震模拟作为超级计算机的主要服务对象，一直以来都是高性能计算的主要挑战之一。近年来随着超级计算机的规模不断扩大、架构持续更新，科学家对模拟精度、时间和空间分辨率的需求也不断提升，面向“神威·太湖之光”超级计算机的地震模拟研究也面临着前所未有的巨大挑战。
 %“神威·太湖之光”为各类科学应用提供了强大的算力支撑
 
 
@@ -76,17 +76,17 @@
   \begin{itemize}
     \item 提出分时动态区域变分辨率正演方法和集合全波形反演方法，从算法层面优化正演效率，并作为反演的基础。集合全波形反演方法同时提升了反演效率和反演准确率。
     
-    \item 提出了面向申威异构众核处理器的地震正演并行优化方法，分别从降低内存传输总量和提升内存传输带宽两方面打破申威处理器的内存墙。然后提出实时压缩方案，在可接受的精度损失下能支持更大规模的地震模拟，将应用程序的可用内存大小和带宽提升到全新高度。
+    \item 提出了面向申威异构众核处理器的地震正演并行优化方法，分别从降低内存传输总量和提升内存传输带宽两方面打破申威处理器的内存墙。然后提出实时压缩方案，在可接受的精度损失下支持更大规模的地震模拟，将应用程序的可用内存大小和带宽提升到全新高度。
     
-    \item 提出了面向神威超算的大规模并行优化方法高效地将地震模拟从单核心扩展到神威超算上千万核心，并提出大规模的通信和IO优化方案。
+    \item 提出了面向神威超算的大规模并行优化方法，将地震模拟从单核心高效地扩展到神威超算上千万核心，并提出了针对大规模并行的通信和IO优化方案。
 
-    \item 仿真了非线性唐山大地震模拟和石油勘探全波形反演成像。非线性唐山大地震模拟使用神威超算千万核心取得了$18.9PFlops$峰值性能。石油勘探反演成像成功地反演了Marmousi模型，展示了集合全波形反演算法在性能和准确率上的优势。
+    \item 仿真了非线性唐山大地震模拟和石油勘探全波形反演成像。非线性唐山大地震模拟使用神威超算千万核心取得了18.9 Pflops峰值性能。石油勘探反演成像成功地反演了Marmousi模型，展示了集合全波形反演算法在性能和准确率上的优势。
   \end{itemize}
 
 \end{cabstract}
 
 % 如果习惯关键字跟在摘要文字后面，可以用直接命令来设置，如下：
- \ckeywords{地震模拟, 高性能计算, 神威太湖之光, 并行优化, 算法设计}
+ \ckeywords{地震模拟, 高性能计算, 神威·太湖之光, 并行优化, 算法设计}
 
 \begin{eabstract}
   While science has made significant progresses in various domains in the current and last century, the interior of the earth still remains largely unknown to the scientists. As a result, the earthquakes, which are significant disasters leading to huge losses in various aspects, are still among the ultimate scientific challenges that wait for deciphering of their development mechanisms and formation of scientific prediction capabilities. Moreover, the lack of understanding of the earth makes it challenging in finding the oil and gas from the undergrounds especially in complex areas.  Thus, the capability of simulating the seismic wave propagation in an accurate way is a key factor along the process of resolving the mysteries of earthquakes and imaging the undergrounds. 

@@ -1,0 +1,378 @@
+% TODO:
+% * 打开\makecover
+% * 添加数组融合的图片
+% * 把SC论文中其他部分添加进来（还有不少新内容）
+%
+\documentclass[degree=doctor]{thuthesis}
+%\documentclass{ctexart}
+% 选项：
+%   degree=[bachelor|master|doctor|postdoctor], % 必选
+%   secret,                                     % 可选
+%   pifootnote,                                 % 可选（建议打开）
+%   openany|openright,                          % 可选，基本不用
+%   arial,                                      % 可选，基本不用
+%   arialtoc,                                   % 可选，基本不用
+%   arialtitle                                  % 可选，基本不用
+
+% 所有其它可能用到的包都统一放到这里了，可以根据自己的实际添加或者删除。
+\usepackage{thuthesis}
+\usepackage{bm}
+\usepackage{lscape}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{silence}
+\usepackage{multirow}
+%\usepackage[normalem]{ulem}
+%\useunder{\uline}{\ul}{}
+\WarningFilter{latex}{Float too large}
+% 定义所有的图片文件在 figures 子目录下
+\graphicspath{{figures/}}
+
+% 可以在这里修改配置文件中的定义。导言区可以使用中文。
+% \def\myname{薛瑞尼}
+\begin{document}
+
+%%% 封面部分
+%\frontmatter
+%\input{cover}
+% 如果使用授权说明扫描页，将可选参数中指定为扫描得到的 PDF 文件名，例如：
+% \makecover[scan-auth.pdf]
+% TODO:
+%\makecover
+
+
+%%% 正文部分
+%\mainmatter
+
+%\input{intro}
+% \input{related_work}
+% \input{modeling_method}
+% \input{sw26010_opt}
+% \input{sunway_para}
+% \input{tangshan}
+% \input{conclusion}
+
+
+%%% 其它部分
+%\backmatter
+
+\chapter{应用介绍}
+千百年来，地震一直严重威胁着人类社会的安全，它具有突发性强、破坏性高、次生灾害严重等特点，可以在几秒或者几十秒内造成大量的房屋倒塌和人员伤亡，其破坏性堪比一场核战争。强烈的地震通常会产生各种次生灾害，如火灾、水灾、滑坡、泥石流甚至瘟疫，这些次生灾害进一步威胁着人类社会的生命财产安全。由于突发性强、破坏力高，地震不仅对一个地区甚至一个国家的社会生活和经济活动会造成巨大的冲击，对人们的心理也造成了重大的影响。
+
+我国位于环太平洋地震带与亚欧地震带的交汇部位，地震断裂带十分发育。中国地震局统计表明，我国陆地地震约占全球陆地地震的33\%，地震死亡人数占全球地震死亡人数的50\%以上，是一个震灾极其严重的国家\cite{地震局}。二十世纪以来，我国共发生6级以上地震近800次，涉及近30个省份，灾害面积达30多万平方千米，房屋倒塌超过700万间，死亡人数超过50万，占全国各类灾害死亡人数的54\%。其中最严重的是1976年河北省唐山市发生的7.8级大地震，直接造成了24万人死亡，16万人重伤，一座重工业城市毁于一旦，直接经济损失超过100亿元\cite{地震局}。
+
+地震灾害对人类社会的毁灭性破坏推动着学者们孜孜不倦地研究地球内部——地震学。地震学起源于人类抵制地震的需要。公元132年，东汉著名天文学家张衡设计了地动仪，这是中国历史上最早的抗震减灾科学工作之一\citep{stein2009introduction}。如图~\ref{fig:heng-scope}所示，地动仪有八个方位，每个方位上各有龙头口含龙珠，每个龙头下方有一只蟾蜍张口等待龙珠掉落。任何一方如有地震发生，指向该方向的龙头口中的龙珠会落入蟾蜍口中，由此便可推断出发生地震的方向\cite{seismoscopewiki}。
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.7\columnwidth]{seismoscope.png}
+\caption{张衡在公元132年设计的地震仪的内部结构和外观\citep{hsiao2009review}。发生地震时，指向该方向的龙头口中的龙珠会落入蟾蜍口中。}
+\label{fig:heng-scope}
+\end{figure}
+
+随着20世纪科技的迅猛发展，人们发明了天然地震信号采集和测量设备，能有效地记录地震波在地球内部传播的信息。基于统计的方法逐渐成为地震风险分析和预报的主要工具。地震数值模拟工具就像一个“数字地动仪”，通过模拟地震波在地球内部的传播和地面运动，可以让科学家“模拟”甚至“预报”地震，也可以为地震相关风险提供定量评估，进一步理解地球内部结构以及地震的演变机制。此外，地震模拟工具还能够与其他科学模型（如交通、电力、水力模型）进行耦合，为地震活跃地区建立抗震救灾公用事业系统。
+
+虽然地震数值模拟能为地震科学研究提供宝贵的“实验平台”，但它也是超级计算领域传统的“巨大挑战”。一次典型的地震模拟通常需要覆盖几百万立方米的空间范围（水平面数百公里、深度数十公里），即使计算网格空间分辨率超过100米，也会涉及数十亿到数万亿的未知数 \citep{cui2010scalable}，这在过去几乎是不可解的问题。 直到最近的二三十年里，随着高性能计算的迅猛发展，基于超级计算机的地震数值模拟工具才成为了科学家研究地震的主要工具之一。
+
+大规模地震模拟的研究工作可以追溯到1996年，Bielak等人在Cray T3D的256个处理器上使用非结构化网格进行了区域大小为$140km \times 100km \times 20km$的地震模拟\citep{bao1996earthquake}，性能达到了8 Gflops。随后，日本和美国科学家相继在地球模拟器\cite{chen2006glueball}、Jaguar\cite{carrington2008high}、Cori-II\citep{breuer2017edge}和Titan\cite{cui2013physics}等超级计算机上不断研制支持范围更广、分辨率更高、模拟更精确的地震模拟工具。与此同时，随着超级计算机的规模不断扩大、架构持续更新，科学家对模拟精度、时间和空间分辨率的需求也不断提升，研制面向十亿亿次异构架构超级计算机的地震模拟工具也面临着前所未有的巨大挑战。
+
+\chapter{算法简介}
+地震正演是模拟地震发生时地震波传播的数值方法。正演是地震模拟的核心，也是反演的基础。正演过程在每个时刻不断更新地震波场，因此伴随着巨大的计算量，也是地震模拟最主要的计算开销。正演算法的性能直接影响着地震模拟和反演方法的效率，提升正演算法的性能具有重要的意义，也成了许多研究员和学者孜孜不倦的研究课题\cite{bednar2002limited,stork2013eliminating}。
+
+\section{声波方程} % (fold)
+声波方程法是目前使用最普遍的正演算法。与射线法不同，声波方程法抛弃了高频假设，采用更准确的双向波动方程描述波场在介质中的传播。声波方程具有计算量适中、模型描述简单和准确性高等优点。
+
+无阻尼、无强迫力介质中的声波方程的一阶形式为：
+\begin{equation}
+\left\{\begin{matrix}
+\frac{\partial}{\partial t}P(\textbf{x},t) = -k(\textbf{x}) \triangledown \cdot v(\textbf{x}, t) \\
+\frac{\partial}{\partial t}v(\textbf{x},t) = -\frac{1}{\rho(\textbf{x})} \triangledown \cdot P(\textbf{x}, t)
+\end{matrix}\right.
+\label{eq:waveeq}
+\end{equation}
+其中$\textbf{x}$表示空间位置，$t$表示时间，$P$和$v$是$(\textbf{x},t)$的函数，$k$为介质的体积模量，$\rho$为模型的密度。$P$为标量，表示$\textbf{x}$处质点在$t$时刻的压强。$v$为矢量，表示$\textbf{x}$处质点在$t$时刻的速度。公式\ref{eq:waveeq}可以消去$v$得到关于$P$的二阶形式：
+\begin{equation}
+  \frac{\partial ^2P(\textbf{x},t)}{\partial t^2} - k(\textbf{x})\triangledown \cdot (\frac{1}{\rho(\textbf{x})}P(\textbf{x},t))=0
+  \label{eq:waveeq2}
+\end{equation}
+若$\rho$为常数，则方程\ref{eq:waveeq2}可以进一步简化为：
+\begin{equation}
+    \frac{\partial ^2P(\textbf{x},t)}{\partial t^2} - c(\textbf{x})^2\triangledown ^2 \cdot P(\textbf{x},t)=F(\textbf{x}, t)
+  \label{eq:waveeq3}
+\end{equation}
+其中$c$为介质的声速，$F(\textbf{x}, t)$为额外引入的强迫压力项。一般情况下，方程\ref{eq:waveeq3}没有解析解，只能利用数值方法求解。
+
+偏微分方程的定解条件还包括初始条件和边界条件。一般情况下初始条件为$P(\textbf{x},0)=0$，表示初始无振动。随着时间的推移，波源以$F(\textbf{x},t)=\delta(\textbf{x}-\textbf{x}_s)f(t)$的形式加入到介质空间$\textbf{x}_s$中，其中$\delta$为脉冲函数。脉冲函数有不同的形式，其中最常用的为Ricker子波。
+
+边界条件为另外一个非常重要的定解条件，其中最简单的边界条件为自由反射边界，但并不符合实际地震模拟中的情景。地震数值模拟只对有限的区域空间进行模拟，而实际地震波却会无限制传播，因此常使用较复杂的吸收边界条件，如海绵吸收边界\cite{cerjan1985nonreflecting}、完美吸收边界\cite{berenger1994perfectly}。
+
+% subsection 声波方程 (end)
+
+\section{弹性波方程}
+弹性波方程是求解速度和应力张量耦合的偏微分方程，令
+\begin{equation}
+  v = (v_x, v_y, v_z)
+  \label{eq:vvvv}
+\end{equation}
+表示波场中质点的速度向量，且令
+\begin{equation}
+  \sigma = \begin{pmatrix}
+\sigma_{xx} & \sigma_{xy} & \sigma_{xz} \\
+\sigma_{yx} & \sigma_{yy} & \sigma_{yz} \\
+\sigma_{zx} & \sigma_{zy} & \sigma_{zz}
+\end{pmatrix}
+\end{equation}
+为对称应力张量，则弹性动力学方程为
+\begin{equation}
+\begin{aligned}
+\partial _t v &= \frac{1}{\rho}\triangledown \cdot \sigma  \\
+\partial _{t}\sigma &= \lambda(\triangledown \cdot v)I + \mu(\triangledown \cdot v + \triangledown \cdot v^T)
+\end{aligned}
+  \label{eq:partialv}
+\end{equation}
+其中，$\lambda$和$\mu$是$lam\acute{e}$系数，$\rho$是介质密度。公式\ref{eq:partialv}可以将速度向量分解成三个标量方程，应力张量分解成六个标量方程。
+
+地震波在地球内部传播过程中能量会逐渐衰减，这也必须体现在数值模拟中。本研究使用了品质因子$Q_s$和$Q_p$分别量化S波（横波）和P波（纵波）的滞弹性衰减。对于频率较高的情况，岩石和土壤中的非线性的响应以及盆地内浅层沉积岩的非线性行为会成为重要考虑因素。 为了适应这些非线性效应，本研究结合Drucker-Prager塑性 \citep {roten2016high}，得到如下产量应力方程：
+\begin{equation}
+Y(\sigma)={\rm max}(0, c \cos \varphi - ( \sigma_{m} + P_{f} ) \sin\varphi)
+\end{equation}
+其中$c$为凝聚量（cohesion）, $\varphi$为摩擦角度（friction angle）, $P_{f}$为流体压力（fluid
+pressure），$\sigma_{m}$为平均压力（mean stress）。产量函数也用以判断是否更新应力：
+\begin{equation}
+\sigma_{ij} = \sigma_{m}^{\rm trial} \delta_{ij} + r s_{ij}^{\rm{trial}}
+\end{equation}
+其中$r$ 是由产量应力$Y(\sigma)$计算所得，$s_{ij}$是应力偏导。
+
+公式\ref{eq:partialv}分解后的九个速度和应力标量方程可以用九个交错网格有限差分方程来近似。公式\ref{eq:staggedgrid}近似了交错网格有限差分方程的时间导数：
+\begin{equation}
+\begin{aligned}
+  \partial_tv(t) &\approx \frac{v(t+\frac{\Delta t}{2})- v(t-\frac{\Delta t}{2})}{\Delta t} \\
+\partial_{t} \sigma(t+\frac{\Delta t}{2}) &\approx \frac{\sigma(t+\Delta t) - \sigma(t)}{\Delta t}
+\end{aligned}
+  \label{eq:staggedgrid}
+\end{equation}
+
+速度和应力的空间导数可以用统一的方程描述。令$\Phi$表示速度或应力分量，$h$表示速度或应力网格中等距的空间分辨率，则网格点$(i,j,k)$的空间偏导$\partial_x \Phi$可以用如下有限差分方案近似：
+\begin{equation}
+  \partial_x \Phi(i,j,k) \approx D_x^4(\Phi)_{i,j,k} = \frac{c_1\left(\Phi_{i+\frac{1}{2},j,k} - \Phi_{i-\frac{1}{2},j,k}\right)+ c_2\left(\Phi_{i+\frac{3}{2},j,k} - \Phi_{i-\frac{3}{2},j,k}\right)}{h}
+  \label{eq:staggedgridspatial}
+\end{equation}
+其中$c_1=9/8$，$c_2=-1/24$。公式\ref{eq:staggedgridspatial}可用以近似每个速度和应力分量中的空间导数。
+
+\section{正演算法} % (fold)
+有一系列数值方法能够模拟天然地震破裂和地震波传播过程，包括有限差分（finite difference）、有限元（finite element）、谱元（spectrum element）和有限体积（finite volume）方法。每种方法有各自最适合的应用场景，但从准确度、计算效率和编程实现难易程度综合考量，有限差分方法最适合用于地震波传播的数值模拟。
+
+此处的正演算法是波动方程的数值解法，更狭义的指在规则网格上基于有限差分方法的波动方程显示时间解法。对于声波方程\ref{eq:waveeq3}的数值解法，本研究使用中心有限差分方法对二阶偏微分算子$\triangledown ^2$进行数值离散。例如，网格点$(ix, iy, iz)$在x方向的中心差分形式为：
+\begin{equation}
+  \frac{\partial ^2 P(ix, iy, iz)}{\partial x^2}=\frac{1}{dx^2}\sum_{k=-N}^N C_{|k|}P(ix+k, iy, iz)+O(dx^{2N+1})
+\end{equation}
+其中：
+\begin{equation}
+\left\{\begin{matrix}
+\begin{aligned}
+C_k &=\frac{(-1)^{k+1}\prod_{i=1,i\neq k}^N i^2}{k^2\prod_{i=i,i\neq k}^N |i^2-k^2|}\quad (k=1,2,\ldots,N) \\
+C_0 &=-2\sum_{k=1}^N C_k  
+\end{aligned}
+\end{matrix}\right.
+\end{equation}
+该格式是$2N$阶精度差分。$\triangledown$空间的其他分量也可以同理进行差分离散化。中心差分格式展开后为星形的计算，空间中一点的二阶微分值由该点上下左右前后各$N$个点以及他本身的值共同计算决定（如图\ref{fig:stencilstruct}所示）。这种计算被称为$Stencil$运算，记为$\triangledown_s$。
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\columnwidth]{stencil7131927.pdf}
+  \caption{不同stencil算子的空间结构\cite{zhang2013autogeneration}。（a）7点三维结构；（b）13点三维结构；（c）19点三维结构；（d）27点三维结构。}
+  \label{fig:stencilstruct}
+\end{figure}
+
+在时间维度上，时间偏微分算子同样可用二阶形式的中心差分格式：
+\begin{equation}
+  \frac{\partial ^2 P(it)}{\partial t^2}=\frac{P(it+1)-2P(it)+P(it-1)}{dt^2}
+\end{equation}
+于是方程\ref{eq:waveeq3}在空间和时间经过二阶形式的中心差分离散化后可写成：
+\begin{equation}
+  P(it+1)=2P(it)-P(it-1)+\frac{c^2}{dt^2}\triangledown_s P(it)+F
+  \label{eq:waveeq4}
+\end{equation}
+公式\ref{eq:waveeq4}为经典的基于二阶时间精度有限差分的波动方程数值解法。其中$P(it)$、$P(it+1)、$$P(it-1)$分别表示当前时刻、下一时刻和前一时刻的波场。
+
+算法\ref{alg:acousticfdcode}是均匀介质三维声波正演伪代码，为了方便描述，使用的是基于2阶的有限差分算子\cite{fu2011eliminating}。但是2阶有限差分算子会带来严重的频散，实际生产和研究中，常常使用10阶或者12阶差分算子。
+
+\begin{algorithm}[ht]
+%\scriptsize
+%\footnotesize
+\small
+\caption{均匀介质三维声波正演伪代码}\label{alg:acousticfdcode}
+\begin{algorithmic}[1]
+\State \textbf{for} ( it = 0; it < nt; it++ ) \{ \label{ln:fdntbegin}
+\State \quad\quad \textbf{for} ( ix = 0; ix < nx; ix++ )
+\State \quad\quad\quad\quad \textbf{for} ( iy = 0; iy < ny; iy++ ) \{
+\State \quad\quad\quad\quad\quad\quad \textbf{for} ( iz = 0; iz < nz; iz++ )\{
+\State \quad\quad\quad\quad\quad\quad\quad\quad  p(it,ix,iy,iz)=2*p(it-1,ix,iy,iz)-p(it-2,ix,iy,iz)+v(ix,iy,iz)*v(ix,iy,iz)*dt*dt*(
+\State \quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad                                    p(it-1,ix,iy,iz)*(2/dx/dx+2/dy/dy+2/dz/dz)+
+\State \quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad                                    (-p(it-1,ix,iy,ix-1)-p(it-1,ix,iy,ix+1))/dx/dx+
+\State \quad\quad \quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad                                    (-p(it-1,ix,iy-1,iz)-p(it-1,ix,iy+1,iz))/dy/dy+
+\State \quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad                                    (-p(it-1,iz-1,iy,iz)-p(it-1,iz+1,iy,iz))/dz/dz);
+\State
+\State \quad\quad\quad\quad\quad\quad\quad\quad \textbf{if} ( is\_boundary(ix, iy, iz) ) \textbf{//吸收边界处理} \label{ln:fdboundary}
+\State \quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad    apply\_absorb\_boundary\_condition(p);
+\State \quad\quad\quad\quad\quad\quad                \} \label{ln:fdntend}
+\State \quad\quad\quad\quad\quad\quad \textbf{if} (is\_record\_seismo) \textbf{//输出合成地震记录}
+\State \quad\quad\quad\quad\quad\quad\quad\quad save\_seismo(p(it, ix, iy, :);
+\State \quad\quad\quad\quad \}
+\State
+\State \quad\quad \textbf{if} ( is\_record\_wavefield ) \textbf{//输出波场快照}
+\State \quad\quad\quad\quad output\_wavefield(p(it, :, :, :));
+\State
+\State \quad\quad \textbf{for} ( is = 0; is < ns; is++ ) \textbf{//在正传波场中添加震源信号}
+\State \quad\quad\quad\quad p(it, src[is].x, src[is].y, src[is].z) += wavelet(is, it);
+\State \}
+\end{algorithmic}
+\end{algorithm}
+
+算法\ref{alg:acousticfdcode}仅描述了在一个速度模型样本，单个震源或者震源编码情况下的地震波正演。在传统的多震源正演中，不同震源之间是相互独立的，可以完全使用不同的节点分别对不同的震源进行地震波模拟，相互之间没有通信开销。因此，提升正演算子的性能只需要关注单个样本、单个震源下的地震波传播模拟即可。地震波正演过程中，核心计算是在$t=0$到$t=n-1$时刻不停往波场中注射震源激励信号、更新波场（第\ref{ln:fdntbegin}到\ref{ln:fdntend}行），并根据需要输出合成地震记录或者正传波场。
+
+正演数值算法也需要在模拟区域的边界处添加吸收边界条件（第\ref{ln:fdboundary}到\ref{ln:fdntend}行），消除地震波在边界处的反射现象。
+
+\chapter{框架介绍}
+
+完整的大规模地震模拟工作流程十分复杂，本研究以模块化的方式开发了不同的组件，并以良好的接口将不同的组件耦合成统一的地震模拟软件框架（如图\ref{fig:framework}所示）。它包括动态破裂震源生成器模块、地震波波场传播模块、三维模型插值与划分模块、震源划分模块、波场快照输出和重启模块。不同模块的设计原则如下：
+\begin{itemize}
+  \item 计算最密集的模块：动态破裂震源生成和地震波波场传播模块。这两个模块的设计首要考虑该模块代码的可扩展性，使其能够高效扩展到神威超算百万甚至上千万核心，其次要考虑每个模块核心代码的运算效率，主要是提升有限差分运算的计算效率；
+  \item 预处理模块：三维震源划分、三维模型插值/划分模块。这些模块根据动态破裂震源生成和地震波波场传播模块在不同平台的实现方式和并行规模对震源和模型进行不同的划分和插值，通过预处理来耦合动态破裂震源器和地震波波场传播模块，并以高效的计算、通信、IO处理为地震波传播模块提供输出；
+  \item 后处理模块：波场快照输出模块与重启模块。为了提高地震波场传播模块的效率，地震波传播模块以最高效的方式将波场快照和重启参数输出到磁盘中，然后调用波场快照输出模块与重启模块对输出的数据进行后处理，形成最终结果。
+\end{itemize}
+
+虽然高效的有限差分运算代码是提升地震波模拟性能的关键，但当计算规模扩展到成千上万甚至十几万进程时，通信和IO变得同样重要甚至更重要。因此本研究将涉及不同资源（计算、通信、IO）的任务进行模块化处理，并集成到统一的软件框架中。这是大规模地震模拟的基础。
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\columnwidth]{地震框架-crop.pdf}
+\caption{基于太湖之光的统一地震模拟软件框架。该框架由动态破裂震源生成器、数值计算网格的生成器、地震波传播模块以及其他辅助模块组成。}
+\label{fig:framework}
+\end{figure}
+
+\section{动态破裂震源生成与地震波波场传播模块}
+
+软件框架中的动态破裂生成模块是基于CG-FDM软件\citep{zhang2014three}进行二次开发而成。该模块具有初始化断层应力、执行摩擦定律控制以及通过波传播生成震源等功能。动态破裂震源生成器的输出是地震破裂震源，这可作为地震波传播模块的输入。地震波传播模块是基于AWP-ODC \citep {cui2010scalable}软件并针对太湖之光的特殊体系结构进行了全新的设计。这个模块占据了主要的计算时间，也是并行优化和创新的重点。地震波传播的核心计算是求解速度-应力张量方程，主要流程包括速度更新、应力更新、震源注入和塑性应力调整。
+
+图~\ref{fig:awp-workflow}描述了地震模拟的核心计算流程，每个核函数（kernels）都涵盖了20-40个三维网格。为了支持复杂的工作流程和促进未来可能的算法调整，本研究在重新设计和移植AWP-ODC的过程中将每个核函数封装为一个标准模块以便轻松地与其他模块衔接。
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.8\columnwidth]{AWP流程图-crop.pdf}
+\caption{地震模拟的核心计算流程，其中变量以数组表示，计算以kernel表示。}
+\label{fig:awp-workflow}
+\end{figure}
+
+在典型的地震模拟中，每一个迭代步的工作流程都由以下五个主要步骤组成：
+
+\begin{itemize}
+\item 速度更新：基于上一个时间步的速度和应力数组，完成速度的更新，包括Halo区域 （由核函数$dvelcy$完成）和中心区域（由核函数$dvelcx$完成）；
+
+\item 应力更新：使用速度、应力、Lam系数和频率相关的地震波震级衰减参数Q等数组来计算Halo区域和中心的应力更新（由核函数$dstrqc$完成）；
+
+\item 断层应力调整：检查屈服应力是否越界（由核函数$drprecprc\_calc$完成），并对断层区域进行相应的调整（由核函数$drprecprc\_app$完成）；
+
+\item 震源注入：注入震源来更新当前时间步的波场（由核函数$addsrc$完成）。
+
+\item 自由表面应力调整：对自由边界进行应力调整（由核函数$fstr$完成）。
+\end{itemize}
+
+\section{并行震源划分与介质模型插值模块}
+\label{sub:并行震源划分与介质模型插值模块}
+在大规模地震模拟中，当震源和介质模型的文件规模逐渐上升到TB量级，地震模拟的预处理也逐渐成为整个软件的瓶颈，耗时不断上升，甚至因为内存不足导致程序无法运行。因此设计高效和高可扩展性的震源、模型划分软件是大规模地震模拟必要过程。本研究采用两种划分方式对震源进行划分：多进程串行划分方法和并行MPI-IO划分方法。
+
+多进程串行划分方法按照既定的地震波传播并行划分规则，每个进程按照所处理的区域将单一的大型震源划分成若干小型震源，并输出到不同的文件中。这种方法能够充分利用神威超算系统的IO带宽。但由于动态破裂震源通常为模拟区域内的一个小范围曲面，震源位置非常集中，在划分的过程中会出现严重负载不均衡问题，降低了运行效率。此外，震源震动时间长、局部性高，容易导致位于震源处的进程所需内存超过系统最大内存。本研究在按空间划分的基础上再按照时间进行划分，有效的避免了划分时部分进程内存不足问题。
+
+并行MPI-IO方法并不对大震源物理切分成若干个小文件，而是在地震传播模块中采用并行MPI-IO接口读取大震源的不同部分。理论上，MPI-IO库在调用良好的情况下能够提供可观的带宽和扩展性，但在神威超算系统中，并行MPI-IO接口却展现出非常糟糕的带宽和扩展性。本文作者猜测原因是移植的MPI-IO标准库并未针对神威超算的特殊架构进行深度优化。
+
+因此从效率和可扩展性出发，并行震源划分采用了多进程串行划分方法。虽然该划分方法会导致了负载不均衡，但划分过程的效率主要取决了IO带宽，处理密集震源的核心几乎能够利用全部IO带宽，因此并不会因为负载不均衡而严重影响效率。
+
+实际介质模型通常不大，在进行多尺度地震模拟时，介质模型需按照地震模拟的网格分辨率进行插值，得到新的介质模型。在大规模地震模拟中，再使用并行划分方法为每个进程构建输入。为了简化流程，提高效率，本研究直接在地震波传播模块中集成插值模块，将实际介质模块插值得到目标模型，可省去将插值后的介质模型存储到磁盘的中间环节。
+
+\section{波场快照输出与重启模块}
+地震波场快照是地震模拟结果之一，是可视化的必要输入数据。本研究提供了灵活的波场快照输出方式，用户可以指定任意范围任何分辨率的波场快照输出，且同时支持不同分辨率的快照输出。低分辨率的波场快照可用于地震模拟可视化，高分辨率的波场和地震记录可精细分析地面运动和烈度。
+
+大规模的地震模拟伴随着巨大的计算量，即便拥有大型超算的支持，计算时间仍然可能需要十几个小时甚至几十个小时。更多计算核心的参与也意味着发生硬件和软件错误的概率更大。这种情况下，软件的容错能力则显得非常重要。例如，在神威超算全机模拟中，有超过一千万核心参与运算，四小时内发生几乎会发生一次硬件或软件错误，如果没有容错机制，整个地震模拟过程需要重新计算，严重地浪费了之前四小时的计算。不具备容错机制几乎无法完成需要长达十几个小时的地震模拟。本研究设计了重启模块，在地震波传播过程中，定期将每个进程的内部状态变量存储到硬盘中（检查点）。当程序异常退出时，地震模拟可从最近的检查点启动以便继续模拟。
+
+在波场快照输出与重启模块中，IO是影响性能最大的瓶颈。例如在16米分辨率下，每个重启检查点需输出的内部状态变量超过108 TB，这对超算系统的磁盘带宽和容量都是巨大的挑战。本文使用与第\ref{sub:并行震源划分与介质模型插值模块}节类似的多进程串行输出方法，每个进程将各自的串行输出到硬盘中，并调用后处理程序对数据进行合并。此外，我们还采用了LZ4压缩方法以降低输出数据量，降低存储开销，并采用诸如“组I/O”和“平衡I/O转发”等技术，实现了120GB/s的峰值I/O带宽，达到了该文件系统峰值带宽的92.3％。
+
+\chapter{性能与分析}
+\section{计算核心优化结果}
+
+正演算法的计算热点比较集中，主要为速度更新和应力更新两个核函数。对于速度物理量的更新，计算中心区域和Halo区域的核函数$ dvelcx，dvelcy $是计算量最大的两个计算核心。对于应力物理量的更新，$ dstrqc $是计算量最大的计算核心。对于塑性部分，$ drprecprc\_calc $是整个程序中最耗时的部分。剩下的内核包括$ fstr $，$ drprecprc\_app $，MPI的预处理和后处理（$ unpack\_VY $，
+$ gather\_VX $和$ unpack\_VX $），这消耗了总运行时间的1-2％。本研究对上述的核函数都进行了极致的优化，以便实现最高的性能。
+
+图~\ref{fig:kernel-result}演示了不同方法下核函数的性能和带宽优化结果。可以看到，几乎所有的核函数经过优化后都获得了30倍左右的性能提升，并且DMA传输带宽达到了总带宽的70％到80％左右。唯一的例外是$ fstr $核函数，$fstr$核函数的计算密度很低，内存访问不规整，只实现4倍至5倍的加速。从图~\ref{fig:kernel-result}还可看到，经过了一系列的优化后，不同核函数优化前和优化后在总执行时间内的耗时分布并无太大变化。
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\columnwidth]{AWP-performance-crop.pdf}
+\caption{地震模拟中不同核函数采用了不同优化技术后取得的性能和内存带宽提升。 `MPE'代表仅使用主核的原始版本。 `PAR'是指使用了多层级并行划分方案并使用了64个从核并行计算的版本。 `MEM'是指采用所有与内存相关的优化的版本。 “CMPR”是指进一步应用实时压缩方案的版本。}
+\label{fig:kernel-result}
+\end{figure}
+
+\section{弱扩展性结果}
+
+弱扩展性表示当计算规模和计算核心同时增大时计算效率的变化。图~\ref {fig:weak-scaling}描述了线性和非线性情况下的地震模拟程序的弱扩展性结果。在这两种情况中每个核组计算的网格大小均为$160\times 160 \times 512$，然后逐渐扩展到整个机器。本研究的大规模唐山大地震模拟从8,000个进程到160,000个进程下实现了97.9\%的并行效率，几乎实现了完美的线性加速效果。这意味着该应用的通信策略非常高效，几乎能将通信完美隐藏在计算中。
+
+无压缩的线性地震模拟在160,000进程下的峰值性能达到了10.7 PFlops。非线性地震模拟的计算密度更高，相同进程下的峰值性达到了15.2 PFlops。相同的内存带宽在采用实时压缩方案后能够处理更多的数据，将线性和非线性地震模拟的性能分别进一步提高至14.2 Pflops和18.9 Pflops。
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\columnwidth]{weak_scaling.pdf}
+\caption{线性和非线性地震模拟从8,000个进程扩展到160,000个进程的弱扩展性结果，其中每个CG对应于一个MPI进程。}
+\label{fig:weak-scaling}
+\end{figure}
+
+\section{强扩展性结果}
+
+强扩展性指当问题规模不变时，增大计算核心数量带来的加速比。神威超算有40,000个节点，测试强扩展性的问题规模太小，则大规模并行时每个节点的任务量太小；问题规模太大，则小规模并行时节点内存可能无法容纳子问题。因此本研究针对不同的计算规模设计了三种不同网格大小算例。图~\ref {fig:strong-scaling}显示了基于三种不同网格大小的线性，非线性，含压缩以及不含压缩情况下的强扩展性测试结果。 
+
+由图~\ref {fig:strong-scaling}所知，不管是线性或非线性地震模拟，含压缩或者是不含压缩，地震模拟都达到了类似的强扩展性结果。但随着进程数量的不断增加，性能出现了下降。本文分析性能的下降是由两个方面造成的：（1）计算与通信的比例减小；（2）外部Halo区域与每个进程内计算的网格体积比例的减小，这降低了AWP软件的计算和通信重叠的效果，使得通信无法完全被计算隐藏。
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\columnwidth]{strong_scaling.pdf}
+\caption{线性和非线性地震模拟在三种不同的问题规模中的强扩展性结果。测量的MPI进程从8,000个扩展到16,000 个，其中每个CG上对应一个MPI进程。}
+\label{fig:strong-scaling}
+\end{figure}
+
+\chapter{具体需求}
+
+\section{计算力需求}
+本组大地震模拟工作使用的数值解法是基于交错网格的有限差分方法，其核心是$Stencil$运算，这是典型的访存受限问题。因此计算并不是主要的瓶颈。
+
+\section{内存需求}
+内存的需求体现为三方面：内存容量需求、内存带宽需求和LDM大小需求。
+
+\subsection{内存容量需求}
+科学运算尤其是地震模拟对内存的需求是永无止境的。目前神威超算单节点内存只有32GB，只有常规服务器内存的1/4。由于单节点内存低，只能将任务划分到更多的节点进行计算，直接增大了节点间通信总量，在大规模并行模拟中通信会成为瓶颈。
+
+除了单节点内存问题，全机内存也有进一步提升的空间。目前最大规模的地震模拟能模拟区域为$320\times 320\times 40km$，空间分辨率为$8m$，如果想要模拟更大区域或者更高的分辨率，只能依靠更高的全机内存总量。
+
+\subsection{内存带宽需求}
+申威26010处理器4核组的峰值内存带宽为136 GB/s，受从核LDM大小和DMA批量读取块（block size）的限制，真实应用在极限情况下的内存带宽只有不足100GB/s。这大约只有其他超算系统内存带宽的1/4左右。增大内存带宽是提升$Stencil$运算等访存受限问题的最关键手段。
+
+\subsection{LDM大小需求}
+
+$Stencil$运算中每个格点的计算需要访问该格点的邻居格点。$Stencil$的形状不同、有限差分算子长度不同，所需要访问的格点数量也不同，在LDM中需要额外存储的数据也不同。对于复杂的Stencil运算，LDM需要存储大量Halo区域元素，有效计算元素比率低，会导致Halo区域重复读取严重，严重影响效率。因此对于Stencil运算而言，LDM空间越大越好。
+
+\section{通信需求}
+$Stencil$运算中每个进程在每个迭代步都需要与邻居进程通信。当进程数量达到上万量级是，通信会成为主要的瓶颈。目前地震模拟使用了空间4阶的有限差分运算，如果想提高模拟准确率，则需要使用更高阶的有限差分算子，这会给通信带来严重的负担。更高的网络带宽和更低的网络延迟是高效大规模并行模拟的关键。
+
+\section{存储需求}
+唐山大地震模拟中极限规模下的地震记录、波场快照输出450TB。地震模拟软件还具备断点重启功能，断点重启功能需要将全机内存中的内部变量存储到磁盘中，每个断点的大小约为100TB，这给IO带宽和存储空间造成了巨大的挑战。
+
+此外，神威超算的MPI-IO性能非常糟糕，几乎无法支持任何使用标准MPI-IO的程序，这给移植工作引入了许多工作量。
+
+%% 参考文献
+% 注意：至少需要引用一篇参考文献，否则下面两行可能引起编译错误。
+% 如果不需要参考文献，请将下面两行删除或注释掉。
+% 数字式引用
+\bibliographystyle{thuthesis-numeric}
+% 作者-年份式引用
+% \bibliographystyle{thuthesis-author-year}
+\bibliography{ref/refs}
+
+\end{document}
