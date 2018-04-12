@@ -427,7 +427,7 @@ C_0 &=-2\sum_{k=1}^N C_k
   \item 将程序划分为预处理、核心计算和后处理，有助于提高各类资源利用率，也更利于流水化。
 \end{itemize}
 
-\subsection{算法分析} % (fold)
+\subsection{数值模拟} % (fold)
 
 本研究进行了数值实验模拟验证了分时动态区域变分辨率正演方法的正确性和性能提升。正演的背景速度模型是大小为$700\times700\times700$的三维网格，其中空间分辨率为dx=dy=dz=10m，速度模型中横波和纵波速度分别为vp=2000m/s, vs=1154.7m/s，接收器平铺在网格的顶部平面的每一个点，范围为rnx=rny=700, rdx=rdy=10m；震源采用初始频率为10 Hz的雷克子波；地震波正演的总时长为8s，时间步长为2ms，总时间步为nt=4000。
 
@@ -467,7 +467,7 @@ C_0 &=-2\sum_{k=1}^N C_k
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.9\columnwidth]{不同Q的加速比.eps}
+\includegraphics[width=0.9\columnwidth]{qspeedup.eps}
 \caption{不同Q在地震波传播不同时间点的加速比。}
 \label{fig:diffqspeedup}
 \end{figure}

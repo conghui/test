@@ -104,9 +104,9 @@ GOJIRA & \citep{ichimura2015implicit} & 2015 & K Computer & 8核SPARC64 & 663,55
 
 地震波正演、逆时偏移、全波形反演等地球物理勘探算法的核心计算是使用显式的有限差分算法更新地震波波场。近些年来，有一系列基于GPU、Xeon Phi和FPGA异构高性能平台的有限差分算法或$Stencil$加速工作，并取得了非常理想的性能结果\cite{qawasmeh2015gpu,martinez2015towards,fang2015optimizing,liu20153d,clapp2015seismic,costa2015half,fu2012revisiting,clapp2010selecting}。例如，J.Fang等人在GPU平台对复杂$Stencil$计算进行优化，相比于12核CPU取得了9.6倍的性能提升\cite{fang2015optimizing}。A. Qawasmeh等人在GPU平台上使用OpenACC工具移植和优化基于波场方程的逆时偏移算法，取得了比CPU快10倍的性能提升\cite{qawasmeh2015gpu}。Y. Yang等人在Xeon Phi平台优化了三维弹性波正演方法，取得了相对于12核CPU 3.7倍的性能提升\cite{you2013accelerating}。H. Fu等人在FPGA平台上优化了逆时偏移算法，取得了与72核CPU相当的性能，并获得了10倍的能耗比提升。
 
-全波形反演方法（full waveform inversion; FWI）于1984年由Tarantola提出，能准确地从人工地震记录中提取大量地下介质信息\cite{tarantola1984inversion,plessix2012full,brossier2009seismic}。该方法通过对比数值模拟合成的地震记录和实际观测的人工地震记录误差，迭代更新模型参数，从而反演地下介质模型\cite{yushu}。然而，由于该方法伴随着巨大的计算开销，直到2010年超级计算机和NVIDIA GPU，Intel Xeon Phi等加速器为全波形反演方法提供了足够的计算能力，该方法才逐渐成为研究热点，并为各大石油公司采用。
+1984年Tarantola提出全波形反演方法（full waveform inversion; FWI），能准确地从人工地震记录中提取大量地下介质信息\cite{tarantola1984inversion,plessix2012full,brossier2009seismic}。该方法通过对比数值模拟合成的地震记录和实际观测的人工地震记录误差，迭代更新模型参数，从而反演地下介质模型\cite{yushu}。然而，由于该方法伴随着巨大的计算开销，直到2010年超级计算机和NVIDIA GPU，Intel Xeon Phi等加速器为全波形反演方法提供了足够的计算能力，该方法才逐渐成为研究热点，并为各大石油公司采用。
 
-尽管全波形反演方法在理论上能够很好地反演地下介质模型，但在实际生产中却面临着两大问题。一方面，全波形反演方法需要非常准确的初始速度模型作为输入，否则该算法很容易陷入局部最优\cite{virieux2009overview}。虽然地震记录中的低频信号成分能够降低对初始速度模型的要求，但是在实际生产场景中往往很难捕捉到低频信号\cite{sirgue2006importance}。另一方面全波形反演方法对地震记录数据中的噪音非常敏感，这严重影响了该算法的实际成像效果。
+尽管全波形反演方法在理论上能够很好地反演地下介质模型，在实际生产中却面临着两大问题。一方面，全波形反演方法需要非常准确的初始速度模型作为输入，否则该算法很容易陷入局部最优\cite{virieux2009overview}。虽然地震记录中的低频信号成分能够降低对初始速度模型的要求，但是在实际生产场景中往往很难捕捉到低频信号\cite{sirgue2006importance}。另一方面全波形反演方法对地震记录数据中的噪音非常敏感，这严重影响了该算法的实际成像效果。
 
 本文工作在传统完全反演\cite{tarantola1982generalized}（total inversion）的基础上，通过使用集合卡尔曼滤波\cite{evensen2003ensemble}中的集合协方差来近似完全反演中的协方差算子，提出了集合全波形反演方法（EnFWI）\cite{yushu,he2015ensemble}。集合全波形反演方法有效降低了在完全反演中更新协方差算子的计算开销，使之可以在一般的分布式集群中进行计算。然而，由于速度模型中需要更新的参数数量比集合样本数量大2-4个数量级，集合卡尔曼滤波的更新增量受到很大的限制。对此，集合全波形反演方法再次引入了震源编码技术\cite{krebs2009fast}。震源编码技术将所有的震源和地震记录分别进行叠加，每次叠加时不同的震源和地震记录分别使用不同的震源编码，在有利于克服局部收敛的同时\cite{castellanos2014fast}，克服了集合卡尔曼滤波低秩空间的局限性，也显著地提升了计算性能。
 
